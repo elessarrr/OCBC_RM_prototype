@@ -5,13 +5,84 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wealth Morning Brief — AI Lab Prototype</title>
   <link rel="stylesheet" href="/static/style.css">
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body>
   <header class="site-header">
-    <h1>Wealth Morning Brief — AI Lab Prototype</h1>
+    <div class="header-inner">
+      <h1>Wealth Morning Brief — AI Lab Prototype</h1>
+      <p class="header-date">{{ page_date }}</p>
+    </div>
   </header>
-  <main>
-    <p>Scaffold ready.</p>
+
+  <main class="page">
+    <section class="panel" aria-labelledby="snapshot-heading">
+      <div class="panel-header">
+        <h2 id="snapshot-heading">Market Snapshot</h2>
+        <p class="as-of">as of {{ snapshot.as_of }}</p>
+      </div>
+      <div class="snapshot-grid">
+        {% for row in snapshot.series %}
+        <div class="snap-cell">
+          <span class="snap-label">{{ row.label }}</span>
+          <span class="snap-price">
+            {% if row.price is not none %}{{ row.price }}{% else %}—{% endif %}
+          </span>
+          <span class="snap-change
+            {%- if row.arrow == '↑' %} up
+            {%- elif row.arrow == '↓' %} down
+            {%- else %} flat
+            {%- endif %}">
+            {{ row.arrow }}
+            {% if row.change_pct is not none %}
+              {{ '%+.2f'|format(row.change_pct) }}%
+            {% else %}
+              —
+            {% endif %}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="brief-heading">
+      <div class="panel-header">
+        <h2 id="brief-heading">Today's Brief</h2>
+        <button type="button" id="copy-brief" class="ghost-btn" hidden>Copy</button>
+      </div>
+      <div id="brief-region"
+           class="brief-region"
+           hx-post="/generate"
+           hx-trigger="load"
+           hx-include="#brief-payload"
+           hx-swap="innerHTML"
+           hx-indicator="#brief-loader">
+        <div id="brief-loader" class="htmx-indicator loading-block">
+          <span class="spinner" aria-hidden="true"></span>
+          <p>Generating your brief…</p>
+          <p id="brief-slow-msg" class="slow-msg" hidden>This is taking a moment — almost there.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="headlines-heading">
+      <h2 id="headlines-heading">Top Headlines</h2>
+      {% if headlines_source == 'fallback' %}
+      <p class="fallback-note">Showing cached headlines (live news feed unavailable).</p>
+      {% endif %}
+      <ul class="headline-list">
+        {% for headline in headlines %}
+        <li>{{ headline }}</li>
+        {% endfor %}
+      </ul>
+    </section>
   </main>
+
+  <form id="brief-payload" class="visually-hidden" aria-hidden="true">
+    <input type="hidden" name="snapshot_json" value='{{ snapshot_json }}'>
+    <input type="hidden" name="headlines_json" value='{{ headlines_json }}'>
+  </form>
+
+  <script src="/static/app.js"></script>
 </body>
 </html>

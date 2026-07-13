@@ -1,0 +1,8 @@
+{% if badge %}
+<p class="persona-badge">{{ badge }}</p>
+{% endif %}
+<div id="brief-text" class="brief-text {% if not ok %}brief-fallback{% endif %}">
+  {% for para in paragraphs %}
+  <p>{{ para }}</p>
+  {% endfor %}
+</div>

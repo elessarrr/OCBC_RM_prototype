@@ -8,11 +8,9 @@
 - `wealth-brief/main.py` — FastAPI app: `GET /`, `POST /generate`, `GET /market`, optional `GET /health`; wires templates and services.
 - `wealth-brief/data/market.py` — yfinance fetch for 7 series + Finnhub news + static headline fallback; `"as of"` timestamp (SGT).
 - `wealth-brief/data/fallback_headlines.py` — Curated static headlines (≤ ~1 day old when frozen) used when Finnhub fails.
-- `wealth-brief/llm/brief.py` — Prompt construction (V1 + V2 append) + Anthropic Claude call; graceful user-safe errors; no hard max-token cap.
-- `wealth-brief/templates/index.html` — Single-page Jinja2 UI (snapshot, headlines, brief, V2 form, HTMX).
+- `wealth-brief/llm/brief.py` — Prompt construction (V1 + V2 append) + Anthropic Claude call; graceful user-safe errors; practical max_tokens=2048 (no product length cap).
 - `wealth-brief/templates/partials/brief.html` — HTMX partial for brief narrative + persona badge (returned by `/generate`).
-- `wealth-brief/static/style.css` — OCBC red/white colour system; spinner; mobile layout.
-- `wealth-brief/static/app.js` — Brief auto-load / 15s secondary loading copy; copy-to-clipboard; asset multi-select max-2 (if not done in HTMX alone).
+- `wealth-brief/static/app.js` — 15s secondary loading copy; copy-to-clipboard.
 - `wealth-brief/requirements.txt` — fastapi, uvicorn, jinja2, python-dotenv, yfinance, httpx, anthropic, gunicorn (Railway).
 - `wealth-brief/.env.example` — `ANTHROPIC_API_KEY`, `FINNHUB_API_KEY` (names only).
 - `wealth-brief/.env` — Local secrets (gitignored).
@@ -49,18 +47,18 @@
   - [x] 2.4 Curate and freeze `fallback_headlines.py` from a real Finnhub pull (≤ ~1 day old OK); use on timeout/error
   - [x] 2.5 Write `tests/test_market.py` covering happy path (mocked), fallback path, and snapshot shape
 
-- [ ] 3.0 Build V1 page: market snapshot UI, auto Claude brief, graceful degradation
-  - [ ] 3.1 Build `index.html` + `style.css`: header, MARKET SNAPSHOT grid, TOP HEADLINES, TODAY'S BRIEF region (OCBC red/white; loss red `#dc2626` only on ↓)
-  - [ ] 3.2 Wire `GET /` to load snapshot + headlines server-side and render immediately (FR-1–4)
-  - [ ] 3.3 Implement `llm/brief.py` with PRD V1 system/user prompts; Claude `claude-sonnet-4-6`; temperature 0.4; no hard max-token cap; plain text only
-  - [ ] 3.4 On LLM auth/network/API failure, return safe user message (e.g. "Brief temporarily unavailable…"); never expose exception text or keys (FR-7)
-  - [ ] 3.5 Auto-generate brief on page load (HTMX or fetch into brief region) with red spinner + "Generating your brief…"; after 15s show secondary "This is taking a moment…" (FR-5, FR-8)
-  - [ ] 3.6 Ensure snapshot never waits on Claude — brief section loads independently (FR-7)
-  - [ ] 3.7 Write `tests/test_brief.py` for prompt payload construction and mocked failure → safe message
+- [x] 3.0 Build V1 page: market snapshot UI, auto Claude brief, graceful degradation
+  - [x] 3.1 Build `index.html` + `style.css`: header, MARKET SNAPSHOT grid, TOP HEADLINES, TODAY'S BRIEF region (OCBC red/white; loss red `#dc2626` only on ↓)
+  - [x] 3.2 Wire `GET /` to load snapshot + headlines server-side and render immediately (FR-1–4)
+  - [x] 3.3 Implement `llm/brief.py` with PRD V1 system/user prompts; Claude `claude-sonnet-4-6`; temperature 0.4; no hard max-token cap; plain text only
+  - [x] 3.4 On LLM auth/network/API failure, return safe user message (e.g. "Brief temporarily unavailable…"); never expose exception text or keys (FR-7)
+  - [x] 3.5 Auto-generate brief on page load (HTMX or fetch into brief region) with red spinner + "Generating your brief…"; after 15s show secondary "This is taking a moment…" (FR-5, FR-8)
+  - [x] 3.6 Ensure snapshot never waits on Claude — brief section loads independently (FR-7)
+  - [x] 3.7 Write `tests/test_brief.py` for prompt payload construction and mocked failure → safe message
 
 - [ ] 4.0 Add `/market` (and optional `/health`), polish V1 CSS, deploy to Railway
-  - [ ] 4.1 Implement `GET /market` JSON endpoint returning 7 series + timestamp (FR-9); optional refresh control on UI
-  - [ ] 4.2 Optional: implement `GET /health` with no external API calls (FR-10)
+  - [x] 4.1 Implement `GET /market` JSON endpoint returning 7 series + timestamp (FR-9); optional refresh control on UI
+  - [x] 4.2 Optional: implement `GET /health` with no external API calls (FR-10)
   - [ ] 4.3 Mobile-responsive polish; title "Wealth Morning Brief — AI Lab Prototype"; no OCBC logo (FR-18, FR-19)
   - [ ] 4.4 Set Railway env vars; deploy; verify public URL shows snapshot + brief or safe fallback
   - [ ] 4.5 Smoke-test on phone; confirm V1 DoD (FR-1–9, optional FR-10)
