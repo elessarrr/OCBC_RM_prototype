@@ -1,7 +1,7 @@
 # Tasks: Personalised Wealth Market Brief Generator
 
 **PRD:** `tasks/0001-prd-wealth-market-brief-generator.md`  
-**Status:** Ready for implementation
+**Status:** In progress — autonomous session
 
 ## Relevant Files
 

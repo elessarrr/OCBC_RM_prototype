@@ -1,5 +1,25 @@
+# OS / editor
 .DS_Store
-**/.venv/
-**/__pycache__/
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Secrets
+.env
 **/.env
-**/.pytest_cache/
+
+# App local
+wealth-brief/.venv/
+wealth-brief/.env
+
+# Context / agent local noise (keep docs; ignore caches)
+*.log
