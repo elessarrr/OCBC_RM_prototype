@@ -42,12 +42,12 @@
   - [x] 1.4 Stub `main.py` with FastAPI app, Jinja2Templates, StaticFiles mount, and a placeholder `GET /` that renders a minimal page
   - [x] 1.5 Add `Procfile` for Railway and confirm app starts locally (`uvicorn main:app --reload`)
 
-- [ ] 2.0 Implement market data (yfinance) and news (Finnhub + static fallback)
-  - [ ] 2.1 Implement `fetch_market_snapshot()` in `data/market.py` for all 7 symbols (`^STI`, `^GSPC`, `^HSI`, `^N225`, `USDSGD=X`, `GC=F`, `BZ=F`) with price, point change, % change, arrow (↑ ↓ →)
-  - [ ] 2.2 Attach `"as of"` timestamp in SGT; on closed market / weekend return **last close** (never blank or invented)
-  - [ ] 2.3 Implement Finnhub fetch (general + forex); normalise to a short headline list (target ≥ 3 for display)
-  - [ ] 2.4 Curate and freeze `fallback_headlines.py` from a real Finnhub pull (≤ ~1 day old OK); use on timeout/error
-  - [ ] 2.5 Write `tests/test_market.py` covering happy path (mocked), fallback path, and snapshot shape
+- [x] 2.0 Implement market data (yfinance) and news (Finnhub + static fallback)
+  - [x] 2.1 Implement `fetch_market_snapshot()` in `data/market.py` for all 7 symbols (`^STI`, `^GSPC`, `^HSI`, `^N225`, `USDSGD=X`, `GC=F`, `BZ=F`) with price, point change, % change, arrow (↑ ↓ →)
+  - [x] 2.2 Attach `"as of"` timestamp in SGT; on closed market / weekend return **last close** (never blank or invented)
+  - [x] 2.3 Implement Finnhub fetch (general + forex); normalise to a short headline list (target ≥ 3 for display)
+  - [x] 2.4 Curate and freeze `fallback_headlines.py` from a real Finnhub pull (≤ ~1 day old OK); use on timeout/error
+  - [x] 2.5 Write `tests/test_market.py` covering happy path (mocked), fallback path, and snapshot shape
 
 - [ ] 3.0 Build V1 page: market snapshot UI, auto Claude brief, graceful degradation
   - [ ] 3.1 Build `index.html` + `style.css`: header, MARKET SNAPSHOT grid, TOP HEADLINES, TODAY'S BRIEF region (OCBC red/white; loss red `#dc2626` only on ↓)
