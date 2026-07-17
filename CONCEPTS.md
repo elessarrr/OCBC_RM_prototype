@@ -14,7 +14,7 @@ Short list of financial headlines used as LLM context and shown under TOP HEADLI
 
 ### Morning brief
 
-Plain-paragraph Claude narrative synthesised from the **provided** snapshot + headlines only. Must not invent prices or news. V1 is generic; V2 is persona-aware.
+Plain-paragraph DeepSeek narrative synthesised from the **provided** snapshot + headlines only. Must not invent prices or news. V1 is generic; V2 is persona-aware.
 
 ### Client profile (V2)
 
@@ -32,7 +32,7 @@ When markets are shut (weekend / after hours), yfinance values are the previous 
 
 ### Graceful LLM degradation
 
-Snapshot and headlines render independently of Claude. If the LLM call fails, the brief region shows a safe fixed message; the page never crashes or blanks.
+Snapshot and headlines render independently of DeepSeek. If the LLM call fails, the brief region shows a safe fixed message; the page never crashes or blanks.
 
 ### Snapshot reuse
 
@@ -42,7 +42,7 @@ On persona regenerate, the app keeps the current in-page market numbers and only
 
 ### Auto-generate (V1)
 
-On page load, after the snapshot paints, the brief region loads with a spinner and requests a Claude narrative without a user click.
+On page load, after the snapshot paints, the brief region loads with a spinner and requests a DeepSeek narrative without a user click.
 
 ### Finnhub fallback
 

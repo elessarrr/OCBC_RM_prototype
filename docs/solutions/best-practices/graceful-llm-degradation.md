@@ -7,20 +7,21 @@ problem_type: best_practice
 component: llm_brief
 severity: high
 applies_when:
-  - "Claude or Anthropic API is slow, down, or misconfigured"
+  - "DeepSeek API is slow, down, or misconfigured"
   - "Building or reviewing GET / or POST /generate brief UX"
-tags: [llm, graceful-degradation, demo-stability, anthropic]
+tags: [llm, graceful-degradation, demo-stability, deepseek]
+last_updated: 2026-07-16
 ---
 
 # Graceful LLM degradation keeps market snapshot usable
 
 ## Context
 
-Interview demos fail when a blank page or stack trace appears because Claude timed out. Aircraft Safety Tracker taught the same lesson for DeepSeek summaries: treat LLM I/O as unreliable.
+Interview demos fail when a blank page or stack trace appears because the LLM timed out. Aircraft Safety Tracker taught the same lesson for DeepSeek summaries: treat LLM I/O as unreliable. This app uses DeepSeek (`deepseek-chat`) for the morning brief.
 
 ## Guidance
 
-1. Render the **market snapshot** (and headlines) without waiting on Claude.
+1. Render the **market snapshot** (and headlines) without waiting on DeepSeek.
 2. Show a spinner in the brief region only; after failure, show a **fixed safe message** (e.g. "Brief temporarily unavailable. Please try again.").
 3. Never pass exception text, status codes, or API key fragments to the template.
 4. Catch auth, connection, and generic API errors in `llm/brief.py` and map them all to that safe message.
@@ -32,7 +33,7 @@ Demo stability and RM trust: numbers still appear even when the narrative layer 
 
 ## When to Apply
 
-- Any Claude call path (`auto-generate`, `/generate`)
+- Any DeepSeek call path (`auto-generate`, `/generate`)
 - Any Finnhub fetch path
 - Code review of error handling around external APIs
 

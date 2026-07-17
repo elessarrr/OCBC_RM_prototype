@@ -1,10 +1,11 @@
 # PRD: Personalised Wealth Market Brief Generator
-**Version:** 1.3  
+**Version:** 1.4  
 **Author:** Bhavesh Rajwani  
 **Status:** Draft — Interview Prototype  
 **Target Audience:** OCBC AI Lab interview panel (also written so a junior developer can implement)  
 **Last Updated:** July 2026  
 **Changelog:**
+- v1.4 — LLM swapped from Anthropic Claude to DeepSeek (`deepseek-chat`); env `DEEPSEEK_API_KEY`
 - v1.3 — No hard max-token cap (quality over length); paid Railway → no warmup/cold-start mitigation required
 - v1.2 — Moved to `tasks/0001-…`; added Goals, RM user stories, numbered FRs + junior checklist, resolved product decisions
 - v1.1 — UI colour system updated to OCBC brand identity (red/white, not navy)
@@ -78,11 +79,11 @@ Use this as the **junior developer checklist**. Implement in order. Each item is
 | **FR-3** | Fetch Finnhub general + forex news; show top headlines on the page. | At least 3 headlines render under TOP HEADLINES when Finnhub succeeds. |
 | **FR-4** | If Finnhub times out or errors, use curated **static fallback headlines** (≤ 1 day old is OK). | Page still loads; headlines section shows fallback; no crash; optional subtle note that headlines are cached/fallback. |
 | **FR-5** | **Auto-generate** the V1 LLM brief on page load (no button required). | After snapshot paints, brief section shows spinner then narrative without user click. |
-| **FR-6** | Claude brief uses only provided market figures + headlines; plain paragraphs; no markdown. | Output is 2–3 paragraphs; no `**`, bullets, or headers; no prices/facts not in the prompt payload. |
-| **FR-7** | **Graceful LLM degradation:** market snapshot never waits on Claude; brief failure shows a safe user message. | Snapshot visible even if Claude is down; brief area shows e.g. "Brief temporarily unavailable. Please try again." — never raw exception text or API keys. |
-| **FR-8** | Loading UX while Claude runs. | Spinner (`#e1241c`) + "Generating your brief…"; after 15s add "This is taking a moment — almost there." |
+| **FR-6** | LLM brief uses only provided market figures + headlines; plain paragraphs; no markdown. | Output is 2–3 paragraphs; no `**`, bullets, or headers; no prices/facts not in the prompt payload. |
+| **FR-7** | **Graceful LLM degradation:** market snapshot never waits on the LLM; brief failure shows a safe user message. | Snapshot visible even if DeepSeek is down; brief area shows e.g. "Brief temporarily unavailable. Please try again." — never raw exception text or API keys. |
+| **FR-8** | Loading UX while the LLM runs. | Spinner (`#e1241c`) + "Generating your brief…"; after 15s add "This is taking a moment — almost there." |
 | **FR-9** | `GET /market` returns JSON snapshot (for refresh). | Valid JSON with the 7 series + timestamp; used by optional refresh control. |
-| **FR-10** | Optional `GET /health` returns a cheap OK response. | Nice-to-have liveness probe; **not** required for demo warmup (paid Railway). Must not call yfinance/Finnhub/Claude. |
+| **FR-10** | Optional `GET /health` returns a cheap OK response. | Nice-to-have liveness probe; **not** required for demo warmup (paid Railway). Must not call yfinance/Finnhub/DeepSeek. |
 
 ### V2 — Persona-aware brief
 
@@ -99,7 +100,7 @@ Use this as the **junior developer checklist**. Implement in order. Each item is
 
 | ID | Requirement | Acceptance criteria |
 |---|---|---|
-| **FR-17** | Secrets only via `.env` / Railway env (`ANTHROPIC_API_KEY`, `FINNHUB_API_KEY`). | No keys in git; `.env.example` lists names without values. |
+| **FR-17** | Secrets only via `.env` / Railway env (`DEEPSEEK_API_KEY`, `FINNHUB_API_KEY`). | No keys in git; `.env.example` lists names without values. |
 | **FR-18** | UI follows §11 colour system (OCBC red/white; loss red only on ↓ cells). | Header/CTA brand red `#e1241c`; down moves `#dc2626` + ↓. |
 | **FR-19** | Mobile-responsive single page; title "Wealth Morning Brief — AI Lab Prototype"; no OCBC logo. | Usable on phone/tablet for demo. |
 
@@ -170,13 +171,15 @@ Use this as the **junior developer checklist**. Implement in order. Each item is
 
 ---
 
-### LLM (Claude API via Anthropic)
+### LLM (DeepSeek via OpenAI-compatible API)
 
-- Model: `claude-sonnet-4-6`
+- Model: `deepseek-chat`
+- Base URL: `https://api.deepseek.com`
 - Role: Synthesise **provided** market data + headlines into a narrative (persona-aware in V2)
-- Max tokens: **no hard cap** — use whatever is needed for a good brief (prompt still targets concise 2–3 paragraphs; V1/V2 length may be similar)
+- Max tokens: practical API ceiling only (e.g. 2048) — prompt still targets concise 2–3 paragraphs
 - Temperature: 0.4
 - Hard rule: never fabricate figures or headlines not in the prompt
+- Env: `DEEPSEEK_API_KEY`
 
 ---
 
@@ -327,7 +330,7 @@ Do not mention asset classes or geographies not selected unless directly relevan
 | Backend | FastAPI (Python) | Fast, async-native |
 | Market data | yfinance | Free, Asian indices |
 | News | Finnhub REST | Free tier OK |
-| LLM | Anthropic Claude | Narrative quality |
+| LLM | DeepSeek (`deepseek-chat`) | Cost-efficient narrative; OpenAI-compatible client |
 | Frontend | Jinja2 + HTMX | No build step; form POST without full reload |
 | Deployment | Railway (paid) | Existing account; no free-tier sleep/warmup needed |
 
@@ -341,7 +344,7 @@ wealth-brief/
 ├── data/
 │   └── market.py        # yfinance + Finnhub (+ static headline fallback)
 ├── llm/
-│   └── brief.py         # Prompt construction + Claude (graceful errors)
+│   └── brief.py         # Prompt construction + DeepSeek (graceful errors)
 ├── templates/
 │   └── index.html
 ├── static/
@@ -394,7 +397,7 @@ Practice under 5 minutes. Do not read from notes.
 
 **Opening (30s):** Tie to OCBC WoW hyper-personalisation; this prototype is the content layer.
 
-**V1 (60s):** Live yfinance snapshot + auto Claude brief from real figures/headlines (~8s). Read first sentence aloud.
+**V1 (60s):** Live yfinance snapshot + auto DeepSeek brief from real figures/headlines (~8s). Read first sentence aloud.
 
 **V2 (90s):** HNW / Capital Preservation / Fixed Income / Singapore → generate. Then Mass Affluent / Aggressive Growth / Equities / Global. Same numbers, different job-to-be-done.
 
@@ -410,7 +413,7 @@ Practice under 5 minutes. Do not read from notes.
 |---|---|---|
 | yfinance stale when market closed | Medium | Last close + `"as of [timestamp]"` |
 | Finnhub timeout | Medium | Static headlines ≤ 1 day old |
-| Claude down / slow | Medium | Snapshot first; safe brief message; spinner + 15s copy |
+| DeepSeek down / slow | Medium | Snapshot first; safe brief message; spinner + 15s copy |
 | Brief hallucinates | Medium | Prompt: only use provided figures; spot-check generations |
 | Persona briefs too similar | Medium | Day 2 prompt tuning; FR-15 gate |
 
@@ -424,7 +427,7 @@ Practice under 5 minutes. Do not read from notes.
 | Build and iterate with modern AI tools | V1 → V2 iteration |
 | Validate ideas through working solutions | Live demo in the room |
 | Translate business needs into technical direction | Tied to OCBC WoW |
-| Stay current with emerging tech | Claude, yfinance, HTMX — pragmatic |
+| Stay current with emerging tech | DeepSeek, yfinance, HTMX — pragmatic |
 | Production-minded prototypes | FastAPI; V3 called out as next decision |
 | Bridge business, product, engineering | Demo: data → client need → revenue |
 

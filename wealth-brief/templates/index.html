@@ -66,13 +66,27 @@
     </section>
 
     <section class="panel" aria-labelledby="headlines-heading">
-      <h2 id="headlines-heading">Top Headlines</h2>
+      <div class="panel-header">
+        <h2 id="headlines-heading">Top Headlines</h2>
+        <p class="source-note">
+          {% if headlines_source == 'finnhub' %}
+          Source: <a href="https://finnhub.io" target="_blank" rel="noopener noreferrer">Finnhub</a>
+          {% else %}
+          Source: cached (Finnhub unavailable)
+          {% endif %}
+        </p>
+      </div>
       {% if headlines_source == 'fallback' %}
       <p class="fallback-note">Showing cached headlines (live news feed unavailable).</p>
       {% endif %}
       <ul class="headline-list">
         {% for headline in headlines %}
-        <li>{{ headline }}</li>
+        <li>
+          <span class="headline-title">{{ headline.title }}</span>
+          {% if headline.url %}
+          <a class="headline-source" href="{{ headline.url }}" target="_blank" rel="noopener noreferrer">(source)</a>
+          {% endif %}
+        </li>
         {% endfor %}
       </ul>
     </section>

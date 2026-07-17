@@ -37,9 +37,18 @@ FAKE_SNAPSHOT = {
 FAKE_NEWS = {
     "source": "finnhub",
     "headlines": [
-        "Markets rise on tech rally",
-        "Fed holds rates steady",
-        "USD softens versus Asian FX",
+        {
+            "title": "Markets rise on tech rally",
+            "url": "https://example.com/1",
+        },
+        {
+            "title": "Fed holds rates steady",
+            "url": "https://example.com/2",
+        },
+        {
+            "title": "USD softens versus Asian FX",
+            "url": "https://example.com/3",
+        },
     ],
 }
 
@@ -57,6 +66,9 @@ def test_index_renders_snapshot_without_waiting_on_llm(
     assert "5210" in response.text
     assert "as of" in response.text
     assert "Markets rise on tech rally" in response.text
+    assert "https://example.com/1" in response.text
+    assert "(source)" in response.text
+    assert "Finnhub" in response.text
     assert 'hx-post="/generate"' in response.text
     assert "Generating your brief" in response.text
 

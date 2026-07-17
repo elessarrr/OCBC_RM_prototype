@@ -9,6 +9,7 @@ import pytest
 
 from data.fallback_headlines import FALLBACK_HEADLINES
 from data.market import (
+    HEADLINE_LIMIT,
     SYMBOLS,
     arrow_for_change,
     fetch_headlines,
@@ -75,27 +76,36 @@ def test_fetch_market_snapshot_last_close_when_flat(mock_ticker_cls: MagicMock) 
 
 
 @patch("data.market.httpx.get")
-def test_fetch_headlines_happy_path(mock_get: MagicMock) -> None:
+def test_fetch_headlines_happy_path_includes_urls_and_cap(mock_get: MagicMock) -> None:
+    general = [
+        {"headline": f"General story {i}", "url": f"https://example.com/g{i}"}
+        for i in range(1, 8)
+    ]
+    forex = [
+        {"headline": f"Forex story {i}", "url": f"https://example.com/f{i}"}
+        for i in range(1, 6)
+    ]
     mock_get.side_effect = [
         MagicMock(
             status_code=200,
-            json=lambda: [
-                {"headline": "Markets rise on tech rally"},
-                {"headline": "Fed holds rates steady"},
-            ],
+            json=lambda: general,
             raise_for_status=lambda: None,
         ),
         MagicMock(
             status_code=200,
-            json=lambda: [{"headline": "USD softens versus Asian FX"}],
+            json=lambda: forex,
             raise_for_status=lambda: None,
         ),
     ]
 
     result = fetch_headlines(api_key="test-key")
     assert result["source"] == "finnhub"
-    assert len(result["headlines"]) >= 3
-    assert result["headlines"][0] == "Markets rise on tech rally"
+    assert len(result["headlines"]) == HEADLINE_LIMIT
+    assert HEADLINE_LIMIT == 10
+    first = result["headlines"][0]
+    assert first["title"] == "General story 1"
+    assert first["url"] == "https://example.com/g1"
+    assert all(h.get("url") for h in result["headlines"])
 
 
 @patch("data.market.httpx.get")
@@ -106,8 +116,11 @@ def test_fetch_headlines_falls_back_on_error(mock_get: MagicMock) -> None:
     assert result["source"] == "fallback"
     assert result["headlines"] == FALLBACK_HEADLINES
     assert len(result["headlines"]) >= 3
+    assert all(isinstance(h, dict) and h.get("title") for h in result["headlines"])
 
 
 def test_fallback_headlines_are_curated() -> None:
     assert len(FALLBACK_HEADLINES) >= 3
-    assert all(isinstance(h, str) and h.strip() for h in FALLBACK_HEADLINES)
+    assert all(
+        isinstance(h, dict) and h.get("title", "").strip() for h in FALLBACK_HEADLINES
+    )

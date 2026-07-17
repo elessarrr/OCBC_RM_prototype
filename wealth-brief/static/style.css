@@ -92,6 +92,34 @@ body {
   color: var(--flat-grey);
 }
 
+.source-note {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--flat-grey);
+}
+
+.source-note a,
+.headline-source {
+  color: var(--badge-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.source-note a:hover,
+.headline-source:hover {
+  color: var(--brand-red);
+}
+
+.headline-title {
+  color: var(--text);
+}
+
+.headline-source {
+  margin-left: 0.35rem;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
 .snapshot-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));

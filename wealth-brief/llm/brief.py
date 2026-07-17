@@ -1,4 +1,4 @@
-"""Claude morning-brief generation with graceful degradation."""
+"""DeepSeek morning-brief generation with graceful degradation."""
 
 from __future__ import annotations
 
@@ -6,7 +6,8 @@ import logging
 import os
 from typing import Any
 
-from anthropic import Anthropic
+import httpx
+from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +15,8 @@ BRIEF_UNAVAILABLE_USER_MESSAGE = (
     "Brief temporarily unavailable. Please try again."
 )
 
-MODEL = "claude-sonnet-4-6"
+DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+MODEL = "deepseek-chat"
 TEMPERATURE = 0.4
 
 V1_SYSTEM_PROMPT = """You are a senior wealth analyst writing a morning market brief for a private banking client.
@@ -77,7 +79,13 @@ def build_system_prompt(profile: dict[str, Any] | None = None) -> str:
     return f"{V1_SYSTEM_PROMPT}\n{addition}"
 
 
-def build_user_prompt(snapshot: dict[str, Any], headlines: list[str]) -> str:
+def _headline_title(item: Any) -> str:
+    if isinstance(item, dict):
+        return str(item.get("title") or item.get("headline") or "").strip()
+    return str(item).strip()
+
+
+def build_user_prompt(snapshot: dict[str, Any], headlines: list[Any]) -> str:
     lines = ["Today's market data:"]
     for row in snapshot.get("series") or []:
         label = row.get("label", "")
@@ -89,8 +97,10 @@ def build_user_prompt(snapshot: dict[str, Any], headlines: list[str]) -> str:
 
     lines.append("")
     lines.append("Top headlines:")
-    for i, headline in enumerate(headlines[:5], start=1):
-        lines.append(f"{i}. {headline}")
+    for i, headline in enumerate(headlines[:10], start=1):
+        title = _headline_title(headline)
+        if title:
+            lines.append(f"{i}. {title}")
 
     lines.append("")
     lines.append("Write a morning market brief based on the above.")
@@ -108,22 +118,21 @@ def build_persona_badge(profile: dict[str, Any] | None) -> str | None:
 
 
 def _strip_markdownish(text: str) -> str:
-    cleaned = text.replace("**", "").replace("__", "").strip()
-    return cleaned
+    return text.replace("**", "").replace("__", "").strip()
 
 
 def generate_brief(
     snapshot: dict[str, Any],
-    headlines: list[str],
+    headlines: list[Any],
     profile: dict[str, Any] | None = None,
     api_key: str | None = None,
 ) -> dict[str, Any]:
     """Return {ok, text, badge}. Never raises; never exposes exception text."""
-    key = api_key if api_key is not None else os.environ.get("ANTHROPIC_API_KEY")
+    key = api_key if api_key is not None else os.environ.get("DEEPSEEK_API_KEY")
     badge = build_persona_badge(profile)
 
     if not key:
-        logger.warning("ANTHROPIC_API_KEY missing; returning safe brief message")
+        logger.warning("DEEPSEEK_API_KEY missing; returning safe brief message")
         return {
             "ok": False,
             "text": BRIEF_UNAVAILABLE_USER_MESSAGE,
@@ -131,25 +140,28 @@ def generate_brief(
         }
 
     try:
-        client = Anthropic(api_key=key)
-        message = client.messages.create(
+        # trust_env=False: avoid local HTTP(S)_PROXY 403s to api.deepseek.com
+        # (same class of failure as Aircraft Safety Tracker DeepSeek ProxyError).
+        http_client = httpx.Client(trust_env=False, timeout=60.0)
+        client = OpenAI(
+            api_key=key,
+            base_url=DEEPSEEK_BASE_URL,
+            http_client=http_client,
+        )
+        response = client.chat.completions.create(
             model=MODEL,
             temperature=TEMPERATURE,
-            system=build_system_prompt(profile),
+            max_tokens=2048,
             messages=[
+                {"role": "system", "content": build_system_prompt(profile)},
                 {
                     "role": "user",
                     "content": build_user_prompt(snapshot, headlines),
-                }
+                },
             ],
-            max_tokens=2048,
         )
-        chunks: list[str] = []
-        for block in message.content:
-            text = getattr(block, "text", None)
-            if text:
-                chunks.append(text)
-        narrative = _strip_markdownish("\n\n".join(chunks).strip())
+        raw = (response.choices[0].message.content or "").strip()
+        narrative = _strip_markdownish(raw)
         if not narrative:
             return {
                 "ok": False,
@@ -158,7 +170,7 @@ def generate_brief(
             }
         return {"ok": True, "text": narrative, "badge": badge}
     except Exception:
-        logger.exception("Claude brief generation failed")
+        logger.exception("DeepSeek brief generation failed")
         return {
             "ok": False,
             "text": BRIEF_UNAVAILABLE_USER_MESSAGE,

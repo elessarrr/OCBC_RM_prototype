@@ -16,6 +16,8 @@ from data.fallback_headlines import FALLBACK_HEADLINES
 logger = logging.getLogger(__name__)
 
 SGT = ZoneInfo("Asia/Singapore")
+HEADLINE_LIMIT = 10
+FINNHUB_NEWS_URL = "https://finnhub.io/api/v1/news"
 
 SYMBOLS: list[dict[str, str]] = [
     {"symbol": "^STI", "label": "STI"},
@@ -26,8 +28,6 @@ SYMBOLS: list[dict[str, str]] = [
     {"symbol": "GC=F", "label": "Gold (USD/oz)"},
     {"symbol": "BZ=F", "label": "Brent Crude"},
 ]
-
-FINNHUB_NEWS_URL = "https://finnhub.io/api/v1/news"
 
 
 def arrow_for_change(change_pct: float | None) -> str:
@@ -111,21 +111,24 @@ def fetch_market_snapshot() -> dict[str, Any]:
     return {"as_of": _format_as_of(), "series": series}
 
 
-def _finnhub_category(api_key: str, category: str, timeout: float = 8.0) -> list[str]:
+def _finnhub_category(api_key: str, category: str, timeout: float = 8.0) -> list[dict[str, str]]:
     response = httpx.get(
         FINNHUB_NEWS_URL,
         params={"category": category, "token": api_key},
         timeout=timeout,
+        trust_env=False,
     )
     response.raise_for_status()
     payload = response.json()
-    headlines: list[str] = []
+    headlines: list[dict[str, str]] = []
     if isinstance(payload, list):
         for row in payload:
-            if isinstance(row, dict):
-                text = (row.get("headline") or "").strip()
-                if text:
-                    headlines.append(text)
+            if not isinstance(row, dict):
+                continue
+            text = (row.get("headline") or "").strip()
+            url = (row.get("url") or "").strip()
+            if text and url:
+                headlines.append({"title": text, "url": url})
     return headlines
 
 
@@ -139,13 +142,14 @@ def fetch_headlines(api_key: str | None = None) -> dict[str, Any]:
     try:
         general = _finnhub_category(key, "general")
         forex = _finnhub_category(key, "forex")
-        combined: list[str] = []
+        combined: list[dict[str, str]] = []
         seen: set[str] = set()
-        for text in general + forex:
-            if text not in seen:
-                seen.add(text)
-                combined.append(text)
-            if len(combined) >= 5:
+        for item in general + forex:
+            title = item["title"]
+            if title not in seen:
+                seen.add(title)
+                combined.append(item)
+            if len(combined) >= HEADLINE_LIMIT:
                 break
         if len(combined) < 3:
             raise ValueError("Fewer than 3 headlines from Finnhub")

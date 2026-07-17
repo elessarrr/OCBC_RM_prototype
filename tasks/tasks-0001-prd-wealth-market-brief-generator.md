@@ -8,11 +8,11 @@
 - `wealth-brief/main.py` — FastAPI app: `GET /`, `POST /generate`, `GET /market`, optional `GET /health`; wires templates and services.
 - `wealth-brief/data/market.py` — yfinance fetch for 7 series + Finnhub news + static headline fallback; `"as of"` timestamp (SGT).
 - `wealth-brief/data/fallback_headlines.py` — Curated static headlines (≤ ~1 day old when frozen) used when Finnhub fails.
-- `wealth-brief/llm/brief.py` — Prompt construction (V1 + V2 append) + Anthropic Claude call; graceful user-safe errors; practical max_tokens=2048 (no product length cap).
+- `wealth-brief/llm/brief.py` — Prompt construction (V1 + V2 append) + DeepSeek (`deepseek-chat`) via OpenAI client; graceful user-safe errors; practical max_tokens=2048.
 - `wealth-brief/templates/partials/brief.html` — HTMX partial for brief narrative + persona badge (returned by `/generate`).
 - `wealth-brief/static/app.js` — 15s secondary loading copy; copy-to-clipboard.
-- `wealth-brief/requirements.txt` — fastapi, uvicorn, jinja2, python-dotenv, yfinance, httpx, anthropic, gunicorn (Railway).
-- `wealth-brief/.env.example` — `ANTHROPIC_API_KEY`, `FINNHUB_API_KEY` (names only).
+- `wealth-brief/requirements.txt` — fastapi, uvicorn, jinja2, python-dotenv, yfinance, httpx, openai, gunicorn (Railway).
+- `wealth-brief/.env.example` — `DEEPSEEK_API_KEY`, `FINNHUB_API_KEY` (names only).
 - `wealth-brief/.env` — Local secrets (gitignored).
 - `wealth-brief/.gitignore` — Ignore `.env`, `__pycache__`, `.venv`, etc.
 - `wealth-brief/Procfile` — Railway web process (e.g. gunicorn/uvicorn).
@@ -26,7 +26,7 @@
 - Greenfield: create the `wealth-brief/` tree from scratch; do not invent OCBC logos or navy theme.
 - Prefer `pytest` for Python tests (not Jest). From `wealth-brief/`: `pytest` or `pytest tests/test_market.py`.
 - Secrets only in `.env` / Railway variables — never commit keys.
-- V1 before V2: snapshot must always render even if Claude/Finnhub fail (Aircraft Safety Tracker–style graceful degradation).
+- V1 before V2: snapshot must always render even if DeepSeek/Finnhub fail (Aircraft Safety Tracker–style graceful degradation).
 - Persona regenerate reuses the **current in-page snapshot**; do not re-fetch yfinance on `POST /generate` unless explicitly refreshing markets.
 - Prompt still asks for concise 2–3 plain paragraphs; **no hard max-token cap**.
 - Paid Railway: `/health` is optional; no demo-day warmup ritual required.

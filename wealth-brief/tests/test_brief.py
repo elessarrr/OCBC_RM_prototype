@@ -1,13 +1,12 @@
-"""Tests for Claude brief prompt construction and graceful failures."""
+"""Tests for DeepSeek brief prompt construction and graceful failures."""
 
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from llm.brief import (
     BRIEF_UNAVAILABLE_USER_MESSAGE,
+    MODEL,
     build_persona_badge,
     build_system_prompt,
     build_user_prompt,
@@ -81,12 +80,18 @@ def test_build_persona_badge() -> None:
     assert "Singapore" in badge
 
 
-@patch("llm.brief.Anthropic")
-def test_generate_brief_returns_plain_text(mock_anthropic_cls: MagicMock) -> None:
+@patch("llm.brief.OpenAI")
+def test_generate_brief_returns_plain_text(mock_openai_cls: MagicMock) -> None:
     client = MagicMock()
-    mock_anthropic_cls.return_value = client
-    client.messages.create.return_value = MagicMock(
-        content=[MagicMock(text="Markets were mixed today. Risk sits with USD/SGD.")]
+    mock_openai_cls.return_value = client
+    client.chat.completions.create.return_value = MagicMock(
+        choices=[
+            MagicMock(
+                message=MagicMock(
+                    content="Markets were mixed today. Risk sits with USD/SGD."
+                )
+            )
+        ]
     )
 
     result = generate_brief(
@@ -98,18 +103,24 @@ def test_generate_brief_returns_plain_text(mock_anthropic_cls: MagicMock) -> Non
     assert result["ok"] is True
     assert "Markets were mixed" in result["text"]
     assert "**" not in result["text"]
-    client.messages.create.assert_called_once()
-    kwargs = client.messages.create.call_args.kwargs
-    assert kwargs["model"] == "claude-sonnet-4-6"
+    mock_openai_cls.assert_called_once()
+    assert mock_openai_cls.call_args.kwargs["base_url"] == "https://api.deepseek.com"
+    client.chat.completions.create.assert_called_once()
+    kwargs = client.chat.completions.create.call_args.kwargs
+    assert kwargs["model"] == MODEL
+    assert kwargs["model"] == "deepseek-chat"
     assert kwargs["temperature"] == 0.4
-    assert "max_tokens" not in kwargs or kwargs.get("max_tokens") is None or kwargs["max_tokens"] >= 1024
+    assert kwargs.get("max_tokens") is None or kwargs["max_tokens"] >= 1024
+    messages = kwargs["messages"]
+    assert messages[0]["role"] == "system"
+    assert messages[1]["role"] == "user"
 
 
-@patch("llm.brief.Anthropic")
-def test_generate_brief_graceful_on_api_error(mock_anthropic_cls: MagicMock) -> None:
+@patch("llm.brief.OpenAI")
+def test_generate_brief_graceful_on_api_error(mock_openai_cls: MagicMock) -> None:
     client = MagicMock()
-    mock_anthropic_cls.return_value = client
-    client.messages.create.side_effect = Exception("boom 401 secret-key-xyz")
+    mock_openai_cls.return_value = client
+    client.chat.completions.create.side_effect = Exception("boom 401 secret-key-xyz")
 
     result = generate_brief(
         SAMPLE_SNAPSHOT,

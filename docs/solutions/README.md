@@ -20,7 +20,7 @@ Optional: `title`, `tags`, `applies_when`, `last_updated`
 
 ## When to search
 
-Before implementing or debugging market data, Finnhub, Claude brief, HTMX UI, or Railway deploy. Also read `CONCEPTS.md`.
+Before implementing or debugging market data, Finnhub, DeepSeek brief, HTMX UI, or Railway deploy. Also read `CONCEPTS.md`.
 
 ## Capture
 
