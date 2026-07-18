@@ -45,6 +45,55 @@
       </div>
     </section>
 
+    <section class="panel" aria-labelledby="profile-heading">
+      <div class="panel-header">
+        <h2 id="profile-heading">Client Profile</h2>
+        <p class="source-note">Complete in under 30 seconds</p>
+      </div>
+      <form id="client-profile"
+            class="profile-form"
+            hx-post="/generate"
+            hx-target="#brief-region"
+            hx-include="#brief-payload"
+            hx-indicator="#brief-loader"
+            hx-swap="innerHTML">
+        <fieldset class="profile-field">
+          <legend>Wealth tier</legend>
+          <label><input type="radio" name="tier" value="Mass Affluent" required> Mass Affluent</label>
+          <label><input type="radio" name="tier" value="High Net Worth"> High Net Worth</label>
+          <label><input type="radio" name="tier" value="Ultra High Net Worth"> Ultra High Net Worth</label>
+        </fieldset>
+
+        <fieldset class="profile-field">
+          <legend>Primary financial goal</legend>
+          <label><input type="radio" name="goal" value="Capital Preservation" required> Capital Preservation</label>
+          <label><input type="radio" name="goal" value="Income Generation"> Income Generation</label>
+          <label><input type="radio" name="goal" value="Aggressive Growth"> Aggressive Growth</label>
+          <label><input type="radio" name="goal" value="Legacy / Estate Planning"> Legacy / Estate Planning</label>
+        </fieldset>
+
+        <fieldset class="profile-field" id="asset-focus">
+          <legend>Asset class focus <span class="hint">(max 2)</span></legend>
+          <label><input type="checkbox" name="asset_classes" value="Equities (Singapore / Asia)"> Equities (Singapore / Asia)</label>
+          <label><input type="checkbox" name="asset_classes" value="Global Equities"> Global Equities</label>
+          <label><input type="checkbox" name="asset_classes" value="Fixed Income / Bonds"> Fixed Income / Bonds</label>
+          <label><input type="checkbox" name="asset_classes" value="Real Assets (Property, REITs, Infrastructure)"> Real Assets (Property, REITs, Infrastructure)</label>
+          <label><input type="checkbox" name="asset_classes" value="Commodities"> Commodities</label>
+          <label><input type="checkbox" name="asset_classes" value="Cash / FX"> Cash / FX</label>
+          <p id="asset-limit-msg" class="field-error" hidden>Select at most 2 asset classes.</p>
+        </fieldset>
+
+        <fieldset class="profile-field">
+          <legend>Geography focus</legend>
+          <label><input type="radio" name="geography" value="Singapore-centric" required> Singapore-centric</label>
+          <label><input type="radio" name="geography" value="Regional Asia"> Regional Asia</label>
+          <label><input type="radio" name="geography" value="Global"> Global</label>
+        </fieldset>
+
+        <button type="submit" class="cta-btn">Generate My Brief</button>
+      </form>
+    </section>
+
     <section class="panel" aria-labelledby="brief-heading">
       <div class="panel-header">
         <h2 id="brief-heading">Today's Brief</h2>

@@ -9,8 +9,10 @@
 - `wealth-brief/data/market.py` — yfinance fetch for 7 series + Finnhub news + static headline fallback; `"as of"` timestamp (SGT).
 - `wealth-brief/data/fallback_headlines.py` — Curated static headlines (≤ ~1 day old when frozen) used when Finnhub fails.
 - `wealth-brief/llm/brief.py` — Prompt construction (V1 + V2 append) + DeepSeek (`deepseek-chat`) via OpenAI client; graceful user-safe errors; practical max_tokens=2048.
+- `wealth-brief/templates/index.html` — Single-page UI: snapshot, client profile form, brief region, headlines.
 - `wealth-brief/templates/partials/brief.html` — HTMX partial for brief narrative + persona badge (returned by `/generate`).
-- `wealth-brief/static/app.js` — 15s secondary loading copy; copy-to-clipboard.
+- `wealth-brief/static/style.css` — OCBC red/white system; responsive grid; profile form + CTA styles.
+- `wealth-brief/static/app.js` — 15s secondary loading copy; copy-to-clipboard; asset-class max-2 guard.
 - `wealth-brief/requirements.txt` — fastapi, uvicorn, jinja2, python-dotenv, yfinance, httpx, openai, gunicorn (Railway).
 - `wealth-brief/.env.example` — `DEEPSEEK_API_KEY`, `FINNHUB_API_KEY` (names only).
 - `wealth-brief/.env` — Local secrets (gitignored).
@@ -19,7 +21,7 @@
 - `wealth-brief/README.md` — What it is, why, how to run, env vars, demo notes.
 - `wealth-brief/tests/test_market.py` — Unit tests for series parsing, last-close behaviour, Finnhub fallback.
 - `wealth-brief/tests/test_brief.py` — Unit tests for prompt construction (V1/V2) and graceful LLM failure (mocked client).
-- `wealth-brief/tests/test_routes.py` — API tests for `/`, `/market`, `/generate`, `/health` with mocks.
+- `wealth-brief/tests/test_routes.py` — API tests for `/`, `/market`, `/generate`, `/health`, V2 profile with mocks.
 
 ### Notes
 
@@ -63,13 +65,13 @@
   - [x] 4.4 Set Railway env vars; deploy; verify public URL shows snapshot + brief or safe fallback
   - [x] 4.5 Smoke-test on phone; confirm V1 DoD (FR-1–9, optional FR-10)
 
-- [ ] 5.0 Implement V2 client profile form, persona-aware `/generate`, and badge
-  - [ ] 5.1 Add CLIENT PROFILE form: wealth tier, primary goal, asset focus (multi-select max 2), geography (single); completable in < 30s (FR-11)
-  - [ ] 5.2 Implement `POST /generate` accepting profile + **current snapshot from client** (or server-held page state); do **not** re-fetch yfinance by default (FR-12)
-  - [ ] 5.3 Append V2 system-prompt block (tier/goal/assets/geography guidance) in `brief.py` (FR-13)
-  - [ ] 5.4 Return HTMX partial with narrative + persona badge (e.g. `Capital Preservation | HNW | Singapore Focus`) (FR-14)
-  - [ ] 5.5 Manually verify ≥ 3 persona combos produce meaningfully different briefs from identical market data (FR-15); tune prompts if needed
-  - [ ] 5.6 Extend `tests/test_brief.py` / `tests/test_routes.py` for V2 prompt contents and `/generate` behaviour with mocks
+- [x] 5.0 Implement V2 client profile form, persona-aware `/generate`, and badge
+  - [x] 5.1 Add CLIENT PROFILE form: wealth tier, primary goal, asset focus (multi-select max 2), geography (single); completable in < 30s (FR-11)
+  - [x] 5.2 Implement `POST /generate` accepting profile + **current snapshot from client** (or server-held page state); do **not** re-fetch yfinance by default (FR-12)
+  - [x] 5.3 Append V2 system-prompt block (tier/goal/assets/geography guidance) in `brief.py` (FR-13)
+  - [x] 5.4 Return HTMX partial with narrative + persona badge (e.g. `Capital Preservation | HNW | Singapore Focus`) (FR-14)
+  - [x] 5.5 Manually verify ≥ 3 persona combos produce meaningfully different briefs from identical market data (FR-15); tune prompts if needed
+  - [x] 5.6 Extend `tests/test_brief.py` / `tests/test_routes.py` for V2 prompt contents and `/generate` behaviour with mocks
 
 - [ ] 6.0 Polish for demo: copy button, persona differentiation check, README, stress test
   - [ ] 6.1 Add Copy button for brief text (clipboard) (FR-16)

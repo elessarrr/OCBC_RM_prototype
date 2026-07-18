@@ -73,6 +73,21 @@ def test_index_renders_snapshot_without_waiting_on_llm(
     assert "Generating your brief" in response.text
 
 
+@patch("main.fetch_headlines", return_value=FAKE_NEWS)
+@patch("main.fetch_market_snapshot", return_value=FAKE_SNAPSHOT)
+def test_index_includes_client_profile_form(_mock_snap, _mock_news) -> None:
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "Client Profile" in response.text
+    assert 'name="tier"' in response.text
+    assert 'name="goal"' in response.text
+    assert 'name="geography"' in response.text
+    assert 'name="asset_classes"' in response.text
+    assert "Generate My Brief" in response.text
+    assert "Mass Affluent" in response.text
+    assert "Capital Preservation" in response.text
+
+
 @patch("main.generate_brief")
 def test_generate_uses_posted_snapshot_not_live_fetch(mock_gen) -> None:
     mock_gen.return_value = {
@@ -94,6 +109,71 @@ def test_generate_uses_posted_snapshot_not_live_fetch(mock_gen) -> None:
     assert args[0] == FAKE_SNAPSHOT
     assert args[1] == FAKE_NEWS["headlines"]
     assert kwargs.get("profile") is None
+
+
+@patch("main.fetch_market_snapshot")
+@patch("main.generate_brief")
+def test_generate_with_profile_reuses_snapshot_not_yfinance(
+    mock_gen, mock_snap
+) -> None:
+    mock_gen.return_value = {
+        "ok": True,
+        "text": "Preserve capital while USD/SGD stays choppy.",
+        "badge": "Capital Preservation | HNW | Singapore Focus",
+    }
+    response = client.post(
+        "/generate",
+        data={
+            "snapshot_json": json.dumps(FAKE_SNAPSHOT),
+            "headlines_json": json.dumps(FAKE_NEWS["headlines"]),
+            "tier": "High Net Worth",
+            "goal": "Capital Preservation",
+            "geography": "Singapore-centric",
+            "asset_classes": ["Fixed Income / Bonds", "Cash / FX"],
+        },
+    )
+    assert response.status_code == 200
+    assert "Preserve capital" in response.text
+    assert "Capital Preservation | HNW | Singapore Focus" in response.text
+    mock_snap.assert_not_called()
+    mock_gen.assert_called_once()
+    _args, kwargs = mock_gen.call_args
+    assert kwargs["profile"] == {
+        "tier": "High Net Worth",
+        "goal": "Capital Preservation",
+        "geography": "Singapore-centric",
+        "asset_classes": ["Fixed Income / Bonds", "Cash / FX"],
+    }
+
+
+@patch("main.generate_brief")
+def test_generate_caps_asset_classes_at_two(mock_gen) -> None:
+    mock_gen.return_value = {
+        "ok": True,
+        "text": "Brief text.",
+        "badge": "Aggressive Growth | Mass Affluent | Global",
+    }
+    response = client.post(
+        "/generate",
+        data={
+            "snapshot_json": json.dumps(FAKE_SNAPSHOT),
+            "headlines_json": json.dumps(FAKE_NEWS["headlines"]),
+            "tier": "Mass Affluent",
+            "goal": "Aggressive Growth",
+            "geography": "Global",
+            "asset_classes": [
+                "Global Equities",
+                "Commodities",
+                "Cash / FX",
+            ],
+        },
+    )
+    assert response.status_code == 200
+    _args, kwargs = mock_gen.call_args
+    assert kwargs["profile"]["asset_classes"] == [
+        "Global Equities",
+        "Commodities",
+    ]
 
 
 @patch("main.generate_brief")

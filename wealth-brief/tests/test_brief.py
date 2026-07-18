@@ -65,6 +65,9 @@ def test_build_system_prompt_v2_appends_persona() -> None:
     assert "Capital Preservation" in prompt
     assert "Fixed Income / Bonds" in prompt
     assert "Singapore-centric" in prompt
+    assert "downside risk" in prompt.lower() or "defensive" in prompt.lower()
+    assert "product-aware" in prompt.lower() or "balanced" in prompt.lower()
+    assert "Never fabricate" in prompt or "never fabricate" in prompt.lower()
 
 
 def test_build_persona_badge() -> None:

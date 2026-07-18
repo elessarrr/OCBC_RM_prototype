@@ -10,6 +10,7 @@
 
 ## July 2026 (newest first)
 
+- **2026-07-18** — *Task 5.0 done (V2 persona).* Added Client Profile form (tier/goal/assets≤2/geography) with HTMX regenerate that reuses in-page snapshot; FR-15 live check: 3 personas from identical data differed (jaccard ~0.23–0.25). **22 tests** green.
 - **2026-07-18** — *Task 4.0 done (V1 deploy).* Mobile-responsive CSS polish; Railway project `soothing-reverence` verified live at `https://ocbcrmprototype-production.up.railway.app` with DeepSeek/Finnhub env vars; phone smoke + FR-1–10 DoD passed. Isolated `test_generate_brief_without_api_key` from local `.env` leakage.
 - **2026-07-18** — *Ports/AST code-grounded Q&A.* Documented Ports file/cache/session-state data flow, the actual LinearRegression forecast UI path, scenario multipliers, Streamlit rerun and file-watcher mechanics, repo hygiene, and AST’s aggregate-only DeepSeek summary; corrected over-attribution and added honest scope language to the Ports README.
 - **2026-07-18** — *RAG Learning Q&A + README honesty.* Extended `OCBC_AI_Lab_Interview_Prep.md` with FastAPI role, DuckDB↔Retriever arrows, eval harness (offline vs live path), all 19 judge questions (original 5 marked), brute-force vs indexed ANN (HNSW/IVF ELI5), embedding≠DB-write walkthrough, and a concrete definition of safety-first mutation. Corrected Bookmarks RAG README draft (DuckDB linear-scan; robots wording deferred to credibility PRD). Wrote `Planning/0003-prd-portfolio-credibility-hardening.md` in Bookmarks RAG (robots + stream test + `llama3.2:3b` default + Docker UI bonus).

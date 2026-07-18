@@ -259,6 +259,77 @@ body {
   border-color: var(--brand-red);
 }
 
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.profile-field {
+  margin: 0;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.profile-field legend {
+  padding: 0 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.profile-field label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.profile-field input {
+  margin-top: 0.2rem;
+}
+
+.hint {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--flat-grey);
+}
+
+.field-error {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: var(--loss-red);
+}
+
+.cta-btn {
+  align-self: flex-start;
+  border: none;
+  background: var(--brand-red);
+  color: var(--white);
+  border-radius: 4px;
+  padding: 0.65rem 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cta-btn:hover {
+  background: var(--brand-red-hover);
+}
+
+.cta-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -323,6 +394,11 @@ body {
   .ghost-btn {
     min-height: 44px;
     padding: 0.5rem 0.75rem;
+  }
+
+  .cta-btn {
+    width: 100%;
+    min-height: 44px;
   }
 }
 
