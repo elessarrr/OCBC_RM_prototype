@@ -1,7 +1,7 @@
 # Tasks: Personalised Wealth Market Brief Generator
 
 **PRD:** `tasks/0001-prd-wealth-market-brief-generator.md`  
-**Status:** In progress — autonomous session
+**Status:** Complete — autonomous session
 
 ## Relevant Files
 
@@ -18,7 +18,7 @@
 - `wealth-brief/.env` — Local secrets (gitignored).
 - `wealth-brief/.gitignore` — Ignore `.env`, `__pycache__`, `.venv`, etc.
 - `wealth-brief/Procfile` — Railway web process (e.g. gunicorn/uvicorn).
-- `wealth-brief/README.md` — What it is, why, how to run, env vars, demo notes.
+- `wealth-brief/README.md` — Purpose, stack, env setup, local run, Railway notes, link to PRD, live URL.
 - `wealth-brief/tests/test_market.py` — Unit tests for series parsing, last-close behaviour, Finnhub fallback.
 - `wealth-brief/tests/test_brief.py` — Unit tests for prompt construction (V1/V2) and graceful LLM failure (mocked client).
 - `wealth-brief/tests/test_routes.py` — API tests for `/`, `/market`, `/generate`, `/health`, V2 profile with mocks.
@@ -73,9 +73,9 @@
   - [x] 5.5 Manually verify ≥ 3 persona combos produce meaningfully different briefs from identical market data (FR-15); tune prompts if needed
   - [x] 5.6 Extend `tests/test_brief.py` / `tests/test_routes.py` for V2 prompt contents and `/generate` behaviour with mocks
 
-- [ ] 6.0 Polish for demo: copy button, persona differentiation check, README, stress test
-  - [ ] 6.1 Add Copy button for brief text (clipboard) (FR-16)
-  - [ ] 6.2 Stress test: 10 consecutive generations; Finnhub fallback path verified; no raw errors in UI
-  - [ ] 6.3 Write `README.md` (purpose, stack, env setup, local run, Railway notes, link to PRD)
-  - [ ] 6.4 Run full demo narrative 3× (V1 auto-brief → two persona switches); fix clunk
-  - [ ] 6.5 Final checklist: FR-1–19 (FR-10 optional); secrets not in git; public URL stable
+- [x] 6.0 Polish for demo: copy button, persona differentiation check, README, stress test
+  - [x] 6.1 Add Copy button for brief text (clipboard) (FR-16)
+  - [x] 6.2 Stress test: 10 consecutive generations; Finnhub fallback path verified; no raw errors in UI
+  - [x] 6.3 Write `README.md` (purpose, stack, env setup, local run, Railway notes, link to PRD)
+  - [x] 6.4 Run full demo narrative 3× (V1 auto-brief → two persona switches); fix clunk
+  - [x] 6.5 Final checklist: FR-1–19 (FR-10 optional); secrets not in git; public URL stable
