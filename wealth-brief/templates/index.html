@@ -16,6 +16,29 @@
   </header>
 
   <main class="page">
+
+    <!-- TODAY'S BRIEF — top of page so the AI output is the first thing visible -->
+    <section class="panel" aria-labelledby="brief-heading">
+      <div class="panel-header">
+        <h2 id="brief-heading">Today's Brief</h2>
+        <button type="button" id="copy-brief" class="ghost-btn" hidden>Copy</button>
+      </div>
+      <div id="brief-region"
+           class="brief-region"
+           hx-post="/generate"
+           hx-trigger="load"
+           hx-include="#brief-payload"
+           hx-swap="innerHTML"
+           hx-indicator="#brief-loader">
+        <div id="brief-loader" class="htmx-indicator loading-block">
+          <span class="spinner" aria-hidden="true"></span>
+          <p>Generating your brief…</p>
+          <p id="brief-slow-msg" class="slow-msg" hidden>This is taking a moment — almost there.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARKET SNAPSHOT -->
     <section class="panel" aria-labelledby="snapshot-heading">
       <div class="panel-header">
         <h2 id="snapshot-heading">Market Snapshot</h2>
@@ -26,7 +49,7 @@
         <div class="snap-cell">
           <span class="snap-label">{{ row.label }}</span>
           <span class="snap-price">
-            {% if row.price is not none %}{{ row.price }}{% else %}—{% endif %}
+            {% if row.price is not none %}{{ row.price }}{{ row.suffix or '' }}{% else %}—{% endif %}
           </span>
           <span class="snap-change
             {%- if row.arrow == '↑' %} up
@@ -43,8 +66,40 @@
         </div>
         {% endfor %}
       </div>
+
+      <!-- SENTIMENT BAR -->
+      {% if sentiment and sentiment.score is not none %}
+      <div class="sentiment-widget">
+        <div class="sentiment-header">
+          <span class="sentiment-title">Market Sentiment</span>
+          <span class="info-btn" tabindex="0" role="button" aria-label="How is this score calculated?">
+            ⓘ
+            <span class="info-tooltip">
+              Score (0–100) based on VIX volatility index (60% weight) — higher VIX signals fear —
+              and S&P 500 10-day price momentum (40% weight). Updated on each page load.
+            </span>
+          </span>
+        </div>
+        <div class="sentiment-bar-wrap">
+          <div class="sentiment-bar">
+            <div class="sentiment-needle" style="left: {{ sentiment.score }}%"></div>
+          </div>
+          <div class="sentiment-scale-labels">
+            <span>Extreme Fear</span>
+            <span>Fear</span>
+            <span>Neutral</span>
+            <span>Greed</span>
+            <span>Extreme Greed</span>
+          </div>
+        </div>
+        <p class="sentiment-reading">
+          <strong>{{ sentiment.score }}</strong> — {{ sentiment.label }}
+        </p>
+      </div>
+      {% endif %}
     </section>
 
+    <!-- CLIENT PROFILE -->
     <section class="panel" aria-labelledby="profile-heading">
       <div class="panel-header">
         <h2 id="profile-heading">Client Profile</h2>
@@ -94,26 +149,7 @@
       </form>
     </section>
 
-    <section class="panel" aria-labelledby="brief-heading">
-      <div class="panel-header">
-        <h2 id="brief-heading">Today's Brief</h2>
-        <button type="button" id="copy-brief" class="ghost-btn" hidden>Copy</button>
-      </div>
-      <div id="brief-region"
-           class="brief-region"
-           hx-post="/generate"
-           hx-trigger="load"
-           hx-include="#brief-payload"
-           hx-swap="innerHTML"
-           hx-indicator="#brief-loader">
-        <div id="brief-loader" class="htmx-indicator loading-block">
-          <span class="spinner" aria-hidden="true"></span>
-          <p>Generating your brief…</p>
-          <p id="brief-slow-msg" class="slow-msg" hidden>This is taking a moment — almost there.</p>
-        </div>
-      </div>
-    </section>
-
+    <!-- TOP HEADLINES -->
     <section class="panel" aria-labelledby="headlines-heading">
       <div class="panel-header">
         <h2 id="headlines-heading">Top Headlines</h2>

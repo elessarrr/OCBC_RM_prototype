@@ -10,6 +10,7 @@
 
 ## July 2026 (newest first)
 
+- **2026-07-18** — *Demo enhancements: A3 + A1 + RM buttons.* Added US 10Y Yield (`^TNX`) to market snapshot (8 series), a Fear & Greed sentiment bar (VIX 60% + S&P 10-day momentum 40%, 0–100 scale, gradient bar with needle + ⓘ tooltip), RM contact buttons (Call + Message) in the brief partial, and reordered page so Today's Brief appears first. 27/27 tests green.
 - **2026-07-18** — *Task 6.0 done (demo polish).* README + live URL; 10/10 stress generations with Finnhub fallback verified; demo narrative run 3× on Railway (V1 + two personas); `.env` not tracked. PRD task list **complete**.
 - **2026-07-18** — *Task 5.0 done (V2 persona).* Added Client Profile form (tier/goal/assets≤2/geography) with HTMX regenerate that reuses in-page snapshot; FR-15 live check: 3 personas from identical data differed (jaccard ~0.23–0.25). **22 tests** green.
 - **2026-07-18** — *Task 4.0 done (V1 deploy).* Mobile-responsive CSS polish; Railway project `soothing-reverence` verified live at `https://ocbcrmprototype-production.up.railway.app` with DeepSeek/Finnhub env vars; phone smoke + FR-1–10 DoD passed. Isolated `test_generate_brief_without_api_key` from local `.env` leakage.

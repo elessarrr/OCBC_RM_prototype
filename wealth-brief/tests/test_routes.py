@@ -52,11 +52,14 @@ FAKE_NEWS = {
     ],
 }
 
+FAKE_SENTIMENT = {"score": 62, "label": "Greed", "vix": 14.2, "sp10d_pct": 1.8}
 
+
+@patch("main.compute_sentiment", return_value=FAKE_SENTIMENT)
 @patch("main.fetch_headlines", return_value=FAKE_NEWS)
 @patch("main.fetch_market_snapshot", return_value=FAKE_SNAPSHOT)
 def test_index_renders_snapshot_without_waiting_on_llm(
-    _mock_snap, _mock_news
+    _mock_snap, _mock_news, _mock_sentiment
 ) -> None:
     response = client.get("/")
     assert response.status_code == 200
@@ -73,9 +76,10 @@ def test_index_renders_snapshot_without_waiting_on_llm(
     assert "Generating your brief" in response.text
 
 
+@patch("main.compute_sentiment", return_value=FAKE_SENTIMENT)
 @patch("main.fetch_headlines", return_value=FAKE_NEWS)
 @patch("main.fetch_market_snapshot", return_value=FAKE_SNAPSHOT)
-def test_index_includes_client_profile_form(_mock_snap, _mock_news) -> None:
+def test_index_includes_client_profile_form(_mock_snap, _mock_news, _mock_sentiment) -> None:
     response = client.get("/")
     assert response.status_code == 200
     assert "Client Profile" in response.text

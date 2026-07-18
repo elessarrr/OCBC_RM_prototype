@@ -15,7 +15,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from data.market import fetch_headlines, fetch_market_snapshot
+from data.market import compute_sentiment, fetch_headlines, fetch_market_snapshot
 from llm.brief import generate_brief
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -47,6 +47,7 @@ async def index(request: Request) -> HTMLResponse:
     snapshot = fetch_market_snapshot()
     news = fetch_headlines()
     headlines = news["headlines"]
+    sentiment = compute_sentiment()
     return templates.TemplateResponse(
         request,
         "index.html",
@@ -57,6 +58,7 @@ async def index(request: Request) -> HTMLResponse:
             "headlines_source": news["source"],
             "snapshot_json": json.dumps(snapshot),
             "headlines_json": json.dumps(headlines),
+            "sentiment": sentiment,
         },
     )
 

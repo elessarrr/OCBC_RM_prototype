@@ -27,6 +27,7 @@ SYMBOLS: list[dict[str, str]] = [
     {"symbol": "USDSGD=X", "label": "USD/SGD"},
     {"symbol": "GC=F", "label": "Gold (USD/oz)"},
     {"symbol": "BZ=F", "label": "Brent Crude"},
+    {"symbol": "^TNX", "label": "US 10Y Yield", "suffix": "%"},
 ]
 
 
@@ -43,7 +44,7 @@ def _format_as_of(when: datetime | None = None) -> str:
     return now.strftime("%d %b %Y, %H:%M SGT")
 
 
-def _series_from_history(label: str, symbol: str, hist: Any) -> dict[str, Any]:
+def _series_from_history(label: str, symbol: str, hist: Any, suffix: str = "") -> dict[str, Any]:
     """Build one series dict from a yfinance history DataFrame (last close OK)."""
     if hist is None or getattr(hist, "empty", True) or "Close" not in hist.columns:
         return {
@@ -53,6 +54,7 @@ def _series_from_history(label: str, symbol: str, hist: Any) -> dict[str, Any]:
             "change_points": None,
             "change_pct": None,
             "arrow": "→",
+            "suffix": suffix,
         }
 
     closes = hist["Close"].dropna()
@@ -64,6 +66,7 @@ def _series_from_history(label: str, symbol: str, hist: Any) -> dict[str, Any]:
             "change_points": None,
             "change_pct": None,
             "arrow": "→",
+            "suffix": suffix,
         }
 
     last = float(closes.iloc[-1])
@@ -82,6 +85,7 @@ def _series_from_history(label: str, symbol: str, hist: Any) -> dict[str, Any]:
         "change_points": round(change_points, 4),
         "change_pct": round(change_pct, 2),
         "arrow": arrow_for_change(change_pct),
+        "suffix": suffix,
     }
 
 
@@ -91,10 +95,11 @@ def fetch_market_snapshot() -> dict[str, Any]:
     for item in SYMBOLS:
         symbol = item["symbol"]
         label = item["label"]
+        suffix = item.get("suffix", "")
         try:
             ticker = yf.Ticker(symbol)
             hist = ticker.history(period="5d")
-            series.append(_series_from_history(label, symbol, hist))
+            series.append(_series_from_history(label, symbol, hist, suffix=suffix))
         except Exception:
             logger.exception("Failed to fetch %s (%s)", label, symbol)
             series.append(
@@ -105,10 +110,53 @@ def fetch_market_snapshot() -> dict[str, Any]:
                     "change_points": None,
                     "change_pct": None,
                     "arrow": "→",
+                    "suffix": suffix,
                 }
             )
 
     return {"as_of": _format_as_of(), "series": series}
+
+
+def _sentiment_label(score: int) -> str:
+    if score <= 20:
+        return "Extreme Fear"
+    if score <= 40:
+        return "Fear"
+    if score <= 60:
+        return "Neutral"
+    if score <= 80:
+        return "Greed"
+    return "Extreme Greed"
+
+
+def compute_sentiment() -> dict[str, Any]:
+    """Compute a 0–100 Fear & Greed score from VIX (60%) and S&P 500 10-day momentum (40%)."""
+    try:
+        vix_hist = yf.Ticker("^VIX").history(period="5d")
+        vix_val = float(vix_hist["Close"].dropna().iloc[-1])
+
+        spx_hist = yf.Ticker("^GSPC").history(period="20d")
+        closes = spx_hist["Close"].dropna()
+        lookback = min(10, len(closes) - 1)
+        sp10d = (
+            (float(closes.iloc[-1]) / float(closes.iloc[-lookback - 1]) - 1) * 100
+            if lookback > 0
+            else 0.0
+        )
+
+        vix_score = max(0.0, min(100.0, 100.0 - (vix_val - 10.0) / 30.0 * 100.0))
+        momentum_score = max(0.0, min(100.0, 50.0 + sp10d * 5.0))
+        score = round(0.6 * vix_score + 0.4 * momentum_score)
+
+        return {
+            "score": score,
+            "label": _sentiment_label(score),
+            "vix": round(vix_val, 1),
+            "sp10d_pct": round(sp10d, 2),
+        }
+    except Exception:
+        logger.exception("Failed to compute sentiment")
+        return {"score": None, "label": "Unavailable", "vix": None, "sp10d_pct": None}
 
 
 def _finnhub_category(api_key: str, category: str, timeout: float = 8.0) -> list[dict[str, str]]:
