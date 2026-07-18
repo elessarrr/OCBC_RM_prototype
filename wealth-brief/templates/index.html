@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wealth Morning Brief — AI Lab Prototype</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css?v=3">
   <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body>
@@ -68,7 +68,7 @@
         {% endfor %}
       </div>
 
-      <!-- SENTIMENT BAR -->
+      <!-- SENTIMENT WIDGET -->
       {% if sentiment and sentiment.score is not none %}
       <div class="sentiment-widget">
         <div class="sentiment-header">
@@ -80,6 +80,10 @@
               and S&P 500 10-day price momentum (40% weight). Updated on each page load.
             </span>
           </button>
+        </div>
+        <div class="sentiment-score-row">
+          <span class="sentiment-score-num">{{ sentiment.score }}</span>
+          <span class="sentiment-label-pill sentiment-{{ sentiment.label | lower | replace(' ', '-') }}">{{ sentiment.label }}</span>
         </div>
         <div class="sentiment-bar-wrap">
           <div class="sentiment-bar">
@@ -93,9 +97,6 @@
             <span>Extreme Greed</span>
           </div>
         </div>
-        <p class="sentiment-reading">
-          <strong>{{ sentiment.score }}</strong> — {{ sentiment.label }}
-        </p>
       </div>
       {% endif %}
     </section>
