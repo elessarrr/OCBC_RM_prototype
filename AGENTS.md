@@ -44,12 +44,17 @@
 
 ## Available Skills
 
-Global Cursor skills (invoke by name). Project does **not** require gstack/aviation skills.
+Global Cursor skills (invoke by name). gstack is installed as a global development toolkit from
+`https://github.com/garrytan/gstack`; it is intentionally not vendored into this demo repository.
 
 - **/learnings-researcher** — Search `docs/solutions/` + read `CONCEPTS.md` before implement/debug
 - **/context-distillation** — Refresh `context/context-YYYY-MM-DD.md` when stale (>2 days)
 - **/compound** — After non-trivial fixes: write solution doc, validate frontmatter, update JOURNAL/LEARNINGS
-- **/review** — Pre-landing review when asked
+- **/office-hours** (gstack) — Product and scope interrogation
+- **/plan-eng-review** (gstack) — Architecture review before implementation
+- **/review** (gstack) — Pre-landing code review
+- **/qa** (gstack) — Browser QA with fixes and regression verification
+- **/ship** (gstack) — Release workflow
 - Cheat sheet: `Planning/runbooks/compound-cheat-sheet.md`
 
 Do **not** invent FAA/NTSB/ASN or Aircraft Safety Tracker domain behaviour in this repo.

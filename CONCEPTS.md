@@ -38,6 +38,12 @@ Snapshot and headlines render independently of DeepSeek. If the LLM call fails, 
 
 On persona regenerate, the app keeps the current in-page market numbers and only changes the narrative/badge. Explicit market refresh is separate (`GET /market` or full reload).
 
+## Evaluation concepts
+
+### LLM-as-judge
+
+Using an LLM to score another LLM's output (e.g. RAGAS faithfulness/relevance). The judge **must be a different model from the generator** — same-model scoring is self-evaluation bias. Even done right (independent, larger judge; bigger dataset) it stays *directional* without human-labeled ground truth. Applies if we ever auto-score the morning brief. See `docs/solutions/best-practices/independent-llm-judge-for-eval.md`.
+
 ## Named processes
 
 ### Auto-generate (V1)

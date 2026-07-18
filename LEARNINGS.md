@@ -12,6 +12,9 @@
 *   **Brand red ≠ loss red:** UI chrome `#e1241c`; down moves `#dc2626` + ↓ only inside snapshot cells.
 *   **No hard max-token cap:** prompt for concise 2–3 paragraphs; allow enough tokens for a good answer.
 *   **Paid Railway:** no free-tier sleep/warmup ritual required for demo.
+*   **Pin ML deps (transformers/torch/sentence-transformers):** unpinned, a clean install drifts to a broken `transformers` 5.x (`torch` NameError at import); pin as a matched set and to a torch version with wheels on every platform you validate on. See `docs/solutions/build-errors/unpinned-ml-deps-broke-ci.md`.
+*   **Independent judge for LLM eval:** never score LLM output with the same model that generated it; use a different (ideally larger) judge, warn if they match, and treat LLM-judge numbers as directional. See `docs/solutions/best-practices/independent-llm-judge-for-eval.md`.
+*   **gstack Cursor setup mismatch:** the README may list `--host cursor` while the shell installer rejects it; use the Cursor document generator and link its generated skills. See `docs/solutions/build-errors/gstack-cursor-installer-host-mismatch.md`.
 
 ---
 
@@ -22,3 +25,8 @@
 *   **Root Cause:** ...
 *   **The Resolution:** ...
 -->
+
+## 1. gstack Cursor installer mismatch
+*   **Date & Error:** 2026-07-18 — `./setup --host cursor` was rejected, then setup stopped because `bunx` was unavailable.
+*   **Root Cause:** gstack 1.60.1.0 documents and implements Cursor skill generation, but its shell host allowlist omits Cursor; this Bun installation exposes `bun x` rather than a separate `bunx`.
+*   **The Resolution:** Ran `bun x playwright install chromium`, completed standard setup, generated skills with `bun run gen:skill-docs:user --host cursor`, and linked the generated skills under `~/.cursor/skills/`.
