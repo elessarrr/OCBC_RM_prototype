@@ -134,7 +134,8 @@ def test_generate_brief_graceful_on_api_error(mock_openai_cls: MagicMock) -> Non
     assert "secret-key" not in result["text"]
 
 
-def test_generate_brief_without_api_key() -> None:
+def test_generate_brief_without_api_key(monkeypatch) -> None:
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
     result = generate_brief(
         SAMPLE_SNAPSHOT,
         SAMPLE_HEADLINES,

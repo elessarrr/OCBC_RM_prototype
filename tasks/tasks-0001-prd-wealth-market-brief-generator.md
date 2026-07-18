@@ -56,12 +56,12 @@
   - [x] 3.6 Ensure snapshot never waits on Claude — brief section loads independently (FR-7)
   - [x] 3.7 Write `tests/test_brief.py` for prompt payload construction and mocked failure → safe message
 
-- [ ] 4.0 Add `/market` (and optional `/health`), polish V1 CSS, deploy to Railway
+- [x] 4.0 Add `/market` (and optional `/health`), polish V1 CSS, deploy to Railway
   - [x] 4.1 Implement `GET /market` JSON endpoint returning 7 series + timestamp (FR-9); optional refresh control on UI
   - [x] 4.2 Optional: implement `GET /health` with no external API calls (FR-10)
-  - [ ] 4.3 Mobile-responsive polish; title "Wealth Morning Brief — AI Lab Prototype"; no OCBC logo (FR-18, FR-19)
-  - [ ] 4.4 Set Railway env vars; deploy; verify public URL shows snapshot + brief or safe fallback
-  - [ ] 4.5 Smoke-test on phone; confirm V1 DoD (FR-1–9, optional FR-10)
+  - [x] 4.3 Mobile-responsive polish; title "Wealth Morning Brief — AI Lab Prototype"; no OCBC logo (FR-18, FR-19)
+  - [x] 4.4 Set Railway env vars; deploy; verify public URL shows snapshot + brief or safe fallback
+  - [x] 4.5 Smoke-test on phone; confirm V1 DoD (FR-1–9, optional FR-10)
 
 - [ ] 5.0 Implement V2 client profile form, persona-aware `/generate`, and badge
   - [ ] 5.1 Add CLIENT PROFILE form: wealth tier, primary goal, asset focus (multi-select max 2), geography (single); completable in < 30s (FR-11)
