@@ -35,7 +35,7 @@ INVESTMENT_IDEAS:
 2 or 3 numbered, concise demo ideas suited to the client profile.
 
 WATCH:
-Exactly 3 numbered catalysts or market levels to monitor today.
+Exactly 3 numbered catalysts or market levels to monitor today, each no more than 12 words.
 
 HOUSE_VIEW:
 2 or 3 numbered, simulated research-view observations.
@@ -174,6 +174,7 @@ def parse_structured_brief_response(raw: str) -> dict[str, list[str]]:
             for line in collected[key]
             if line.strip()
         ]
+    sections["watch"] = sections["watch"][:3]
 
     return sections
 
@@ -228,6 +229,8 @@ def generate_brief(
             base_url=DEEPSEEK_BASE_URL,
             http_client=http_client,
         )
+        # BRIEF, IDEAS, WATCH, and HOUSE_VIEW intentionally share one call.
+        # Split WATCH into a second call only if production quality proves poor.
         response = client.chat.completions.create(
             model=MODEL,
             temperature=TEMPERATURE,

@@ -44,7 +44,7 @@
   - [x] 2.5 Wire `main.py` `/generate` to pass `ideas` into the brief partial; render **Investment ideas (demo)** with 2–3 bullets when `ok` and ideas present; hide when empty/failed (FR-23–25)
   - [x] 2.6 GREEN: run `pytest tests/test_brief.py` then extend `test_routes.py` mock so `/generate` HTML includes the demo ideas heading when mocked structured content is returned
 
-- [ ] 3.0 Draft client email from fixed boilerplate + brief (FR-26–28)
+- [x] 3.0 Draft client email from fixed boilerplate + brief (FR-26–28)
   - [x] 3.1 RED: unit test that `build_client_email(brief_text)` wraps paragraphs in the PRD canonical template with `[CLIENT_NAME]` and `[RM_NAME]` placeholders (exact boilerplate)
   - [x] 3.2 Implement `build_client_email()` in `llm/brief.py` (or small helper module); use parsed BRIEF text only — no second LLM call
   - [x] 3.3 In `brief.html`, when `ok`, show Draft email block (preformatted) + Copy button + one-line “Template for demo only — not an official OCBC communication.”
@@ -52,10 +52,10 @@
   - [x] 3.5 GREEN: route/partial test asserts email placeholders and demo disclaimer string appear on successful generate
 
 - [ ] 4.0 What to watch today panel (FR-29–30)
-  - [ ] 4.1 Ensure prompt asks for exactly 3 short WATCH lines (≤ ~12 words); parser yields up to 3 items
-  - [ ] 4.2 Render **What to watch today** in `brief.html` when `ok` and 3 items exist; hide or show soft fallback if fewer/missing (do not crash)
-  - [ ] 4.3 Document in code comment (and later README in 8.0) that default is one structured call; separate WATCH call is fallback only if quality is poor
-  - [ ] 4.4 Extend tests: happy path with 3 watch items; missing WATCH block does not fail the whole brief
+  - [x] 4.1 Ensure prompt asks for exactly 3 short WATCH lines (≤ ~12 words); parser yields up to 3 items
+  - [x] 4.2 Render **What to watch today** in `brief.html` when `ok` and 3 items exist; hide or show soft fallback if fewer/missing (do not crash)
+  - [x] 4.3 Document in code comment (and later README in 8.0) that default is one structured call; separate WATCH call is fallback only if quality is poor
+  - [x] 4.4 Extend tests: happy path with 3 watch items; missing WATCH block does not fail the whole brief
 
 - [ ] 5.0 Persistent footer disclaimer (FR-36, FR-38 start)
   - [ ] 5.1 Add site footer on `index.html` stating: demonstration prototype; public market data + AI-generated demo narrative/ideas; **not** official OCBC research/advice/recommendation; production path can restrict generation to approved proprietary research

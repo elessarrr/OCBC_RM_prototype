@@ -94,6 +94,25 @@ def test_parse_structured_brief_response_soft_fails_missing_blocks() -> None:
     assert parsed["house_view"] == []
 
 
+def test_parse_structured_brief_response_caps_watch_at_three() -> None:
+    parsed = parse_structured_brief_response(
+        """BRIEF:
+Markets were mixed.
+
+WATCH:
+1. First catalyst
+2. Second catalyst
+3. Third catalyst
+4. Extra catalyst"""
+    )
+
+    assert parsed["watch"] == [
+        "First catalyst",
+        "Second catalyst",
+        "Third catalyst",
+    ]
+
+
 def test_build_client_email_wraps_brief_in_canonical_template() -> None:
     brief = "Markets were mixed overnight.\n\nStay selective into the close."
 

@@ -177,6 +177,58 @@ def test_generate_renders_fixed_client_email_draft(mock_gen) -> None:
     assert "not an official OCBC communication" in response.text
 
 
+@patch("main.generate_brief")
+def test_generate_renders_three_what_to_watch_items(mock_gen) -> None:
+    mock_gen.return_value = {
+        "ok": True,
+        "text": "Markets were mixed.",
+        "badge": None,
+        "ideas": [],
+        "watch": ["USD/SGD direction", "US Treasury yields", "Regional volatility"],
+        "house_view": [],
+        "email_draft": "",
+    }
+
+    response = client.post(
+        "/generate",
+        data={
+            "snapshot_json": json.dumps(FAKE_SNAPSHOT),
+            "headlines_json": json.dumps(FAKE_NEWS["headlines"]),
+        },
+    )
+
+    assert response.status_code == 200
+    assert "What to watch today" in response.text
+    assert "USD/SGD direction" in response.text
+    assert "US Treasury yields" in response.text
+    assert "Regional volatility" in response.text
+
+
+@patch("main.generate_brief")
+def test_generate_hides_incomplete_what_to_watch_without_failing_brief(mock_gen) -> None:
+    mock_gen.return_value = {
+        "ok": True,
+        "text": "The grounded brief still renders.",
+        "badge": None,
+        "ideas": [],
+        "watch": ["Only one item"],
+        "house_view": [],
+        "email_draft": "",
+    }
+
+    response = client.post(
+        "/generate",
+        data={
+            "snapshot_json": json.dumps(FAKE_SNAPSHOT),
+            "headlines_json": json.dumps(FAKE_NEWS["headlines"]),
+        },
+    )
+
+    assert response.status_code == 200
+    assert "The grounded brief still renders." in response.text
+    assert "What to watch today" not in response.text
+
+
 @patch("main.fetch_market_snapshot")
 @patch("main.generate_brief")
 def test_generate_with_profile_reuses_snapshot_not_yfinance(
