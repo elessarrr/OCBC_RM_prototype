@@ -2,7 +2,7 @@
 
 **PRD:** `tasks/0002-prd-wow-aligned-demo-enhancements.md`  
 **Depends on:** `tasks/0001-prd-wealth-market-brief-generator.md` (complete)  
-**Status:** Ready for implementation
+**Status:** Complete
 
 ## Relevant Files
 
@@ -16,6 +16,8 @@
 - `wealth-brief/tests/test_brief.py` — Structured parse happy path + missing-block soft-fail; portfolio mix in prompt; email template.
 - `wealth-brief/tests/test_routes.py` — `/` footer; `/generate` returns new panels when mocked ok; soft-fail when LLM fails.
 - `tasks/0002-prd-wow-aligned-demo-enhancements.md` — Source of truth for FR-20–39.
+- `Planning/master_context_documents/mcd_2026-07-19.md` — Architecture and data-flow snapshot after PRD 0002.
+- `docs/solutions/ui-bugs/clipboard-api-permission-fallback.md` — Reusable browser-copy fallback found during smoke QA.
 
 ### Notes
 
@@ -75,10 +77,10 @@
   - [x] 7.3 CSS: simple section consistent with ideas/watch; not a busy dashboard card
   - [x] 7.4 Tests cover present bullets + missing-block soft-fail path
 
-- [ ] 8.0 Tests, README V3 path, copy audit, demo smoke (FR-38–39)
+- [x] 8.0 Tests, README V3 path, copy audit, demo smoke (FR-38–39)
   - [x] 8.1 Full regression: `pytest -q` from `wealth-brief/` green
   - [x] 8.2 Update `README.md`: link PRD 0002; summarise new panels; document V3 ingestion path (§10 of PRD) and interviewer one-liner; note no official OCBC claims
   - [x] 8.3 Add a short copy-audit checklist to README (or PR description template): forbidden phrases + required “demo/simulated” labels
   - [x] 8.4 Optional: add `ResearchSource` stub module returning empty/demo passages (no real corpus) — skipped; README documents the V3 boundary without adding unused production code
   - [x] 8.5 Manual demo narrative 2×: chip → optional edit → Generate → brief + ideas + watch + email copy + footer visible; second chip → Generate again with same snapshot numbers
-  - [ ] 8.6 Deploy/smoke on Railway when local DoD met; confirm disclaimer + soft-fail still hold remotely
+  - [x] 8.6 Deploy/smoke on Railway when local DoD met; confirm disclaimer + soft-fail still hold remotely
