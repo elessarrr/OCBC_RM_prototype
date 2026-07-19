@@ -64,6 +64,20 @@ body {
   gap: 1rem;
 }
 
+.site-footer {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0.25rem 1.25rem 1.5rem;
+  color: var(--flat-grey);
+  font-size: 0.75rem;
+}
+
+.site-footer p {
+  margin: 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+
 .panel {
   background: var(--panel);
   border: 1px solid var(--border);

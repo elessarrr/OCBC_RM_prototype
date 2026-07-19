@@ -51,17 +51,17 @@
   - [x] 3.4 In `app.js`, wire copy for the email draft (reuse/extend existing clipboard helper); do not break brief copy if still present
   - [x] 3.5 GREEN: route/partial test asserts email placeholders and demo disclaimer string appear on successful generate
 
-- [ ] 4.0 What to watch today panel (FR-29–30)
+- [x] 4.0 What to watch today panel (FR-29–30)
   - [x] 4.1 Ensure prompt asks for exactly 3 short WATCH lines (≤ ~12 words); parser yields up to 3 items
   - [x] 4.2 Render **What to watch today** in `brief.html` when `ok` and 3 items exist; hide or show soft fallback if fewer/missing (do not crash)
   - [x] 4.3 Document in code comment (and later README in 8.0) that default is one structured call; separate WATCH call is fallback only if quality is poor
   - [x] 4.4 Extend tests: happy path with 3 watch items; missing WATCH block does not fail the whole brief
 
 - [ ] 5.0 Persistent footer disclaimer (FR-36, FR-38 start)
-  - [ ] 5.1 Add site footer on `index.html` stating: demonstration prototype; public market data + AI-generated demo narrative/ideas; **not** official OCBC research/advice/recommendation; production path can restrict generation to approved proprietary research
-  - [ ] 5.2 Style footer muted/small; always present on `GET /` without a modal
-  - [ ] 5.3 Grep UI copy for forbidden claims (“OCBC recommends”, “official OCBC view”, etc.) and fix any hits
-  - [ ] 5.4 Route test: `GET /` response contains key disclaimer phrases
+  - [x] 5.1 Add site footer on `index.html` stating: demonstration prototype; public market data + AI-generated demo narrative/ideas; **not** official OCBC research/advice/recommendation; production path can restrict generation to approved proprietary research
+  - [x] 5.2 Style footer muted/small; always present on `GET /` without a modal
+  - [x] 5.3 Grep UI copy for forbidden claims (“OCBC recommends”, “official OCBC view”, etc.) and fix any hits
+  - [x] 5.4 Route test: `GET /` response contains key disclaimer phrases
 
 - [ ] 6.0 Optional portfolio mix field (FR-31–33)
   - [ ] 6.1 Add optional text input `portfolio_mix` to the profile form (placeholder e.g. `60% equities / 30% bonds / 10% gold`); empty allowed

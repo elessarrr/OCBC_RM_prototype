@@ -92,6 +92,22 @@ def test_index_includes_client_profile_form(_mock_snap, _mock_news, _mock_sentim
     assert "Capital Preservation" in response.text
 
 
+@patch("main.compute_sentiment", return_value=FAKE_SENTIMENT)
+@patch("main.fetch_headlines", return_value=FAKE_NEWS)
+@patch("main.fetch_market_snapshot", return_value=FAKE_SNAPSHOT)
+def test_index_includes_prototype_disclaimer(
+    _mock_snap, _mock_news, _mock_sentiment
+) -> None:
+    response = client.get("/")
+    text = " ".join(response.text.split())
+
+    assert response.status_code == 200
+    assert "Demonstration prototype" in text
+    assert "AI-generated for demonstration" in text
+    assert "not official OCBC research, advice, or a bank recommendation" in text
+    assert "approved proprietary research" in text
+
+
 @patch("main.generate_brief")
 def test_generate_uses_posted_snapshot_not_live_fetch(mock_gen) -> None:
     mock_gen.return_value = {
