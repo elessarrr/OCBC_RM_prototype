@@ -36,7 +36,8 @@
   </ul>
 </section>
 {% endif %}
-{% if ok and email_draft %}
+{# Disabled via SHOW_CLIENT_EMAIL_DRAFT — flip that flag in main.py to re-enable. #}
+{% if show_email_draft and ok and email_draft %}
 <section class="brief-section email-draft-section" aria-labelledby="email-draft-heading">
   <div class="brief-section-header">
     <h3 id="email-draft-heading">Draft email to client</h3>

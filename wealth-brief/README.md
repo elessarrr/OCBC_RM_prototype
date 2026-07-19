@@ -54,8 +54,9 @@ Never commit `.env`.
 1. Open the page — market snapshot paints first; brief spinner then narrative (or safe fallback).
 2. Select a persona chip, optionally edit the profile and portfolio mix, then press **Generate My Brief**.
 3. Review the grounded brief, demo investment ideas, three-item watchlist, and explicitly simulated research view.
-4. Copy the fixed client-email draft with `[CLIENT_NAME]` and `[RM_NAME]` placeholders.
-5. Switch persona and regenerate: **same numbers**, different framing + badge.
+4. Switch persona and regenerate: **same numbers**, different framing + badge.
+
+The fixed client-email draft helper remains in code (`SHOW_CLIENT_EMAIL_DRAFT` in `main.py`) but is UI-disabled so the page reads as a morning brief rather than an RM-only workflow.
 
 Graceful degradation is intentional: Finnhub or DeepSeek failures must never blank the snapshot.
 
@@ -82,7 +83,7 @@ Before a demo or release:
 
 - Reject positive claims such as “OCBC recommends”, “official OCBC view”, or “OCBC advice”.
 - Label generated ideas as **demo** and generated house views as **simulated** and **not official OCBC research**.
-- Keep the persistent prototype/non-advice footer and the email-template disclaimer visible.
+- Keep the persistent prototype/non-advice footer visible.
 - Describe the production research path as a future governed capability, not a current integration.
 
 ## Tests

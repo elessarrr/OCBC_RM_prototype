@@ -163,7 +163,8 @@ def test_generate_renders_demo_investment_ideas(mock_gen) -> None:
 
 
 @patch("main.generate_brief")
-def test_generate_renders_fixed_client_email_draft(mock_gen) -> None:
+def test_generate_hides_disabled_client_email_draft(mock_gen) -> None:
+    """Email draft stays in code but is UI-disabled for a client-facing brief."""
     mock_gen.return_value = {
         "ok": True,
         "text": "Markets were mixed. Maintain selective exposure.",
@@ -185,12 +186,10 @@ def test_generate_renders_fixed_client_email_draft(mock_gen) -> None:
     )
 
     assert response.status_code == 200
-    assert "Draft email to client" in response.text
-    assert "Dear [CLIENT_NAME]" in response.text
-    assert "[RM_NAME]" in response.text
-    assert "Copy email" in response.text
-    assert "Template for demo only" in response.text
-    assert "not an official OCBC communication" in response.text
+    assert "Markets were mixed. Maintain selective exposure." in response.text
+    assert "Draft email to client" not in response.text
+    assert "Dear [CLIENT_NAME]" not in response.text
+    assert "Copy email" not in response.text
 
 
 @patch("main.generate_brief")

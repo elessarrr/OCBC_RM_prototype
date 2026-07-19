@@ -3,15 +3,23 @@
 > **Format (per AGENTS.md):** One entry per completed task / major bug / stack learning.  
 > **1–2 sentences each.** Group by month; newest entry first within each month.
 
-**App:** `wealth-brief/` · **PRD:** `tasks/0001-prd-wealth-market-brief-generator.md`  
+**App:** `wealth-brief/` · **PRDs:** `tasks/0001-prd-wealth-market-brief-generator.md`, `tasks/0002-prd-wow-aligned-demo-enhancements.md`  
 **Local:** `uvicorn main:app --reload` from `wealth-brief/` (typical `http://127.0.0.1:8000`)
 
 ---
 
 ## July 2026 (newest first)
 
+- **2026-07-19** — *Draft email UI disabled.* Kept `build_client_email` and the brief partial markup, but gated rendering behind `SHOW_CLIENT_EMAIL_DRAFT = False` so the page reads as a morning brief rather than an RM-only workflow.
+- **2026-07-19** — *PRD 0002 implemented.* Added persona presets, one-call structured brief panels, fixed client email, portfolio context, simulated research labelling, and a persistent prototype disclaimer; 40 tests pass and the two-persona browser smoke kept snapshot values stable. Browser QA also exposed clipboard permission denial, resolved with a synchronous copy fallback for both copy controls.
+- **2026-07-19** — *PRD 0002 task list.* Expanded `tasks/tasks-0002-prd-wow-aligned-demo-enhancements.md` with junior sub-tasks (chips → structured LLM → email → watch → footer → portfolio → house view → polish), mapped to existing form values and TDD notes.
+- **2026-07-19** — *PRD 0002 written.* Captured WoW-aligned demo enhancements in priority order (chips → ideas → email template → watch → portfolio mix → simulated house view → V3 research ingestion), plus a mandatory footer disclaimer that nothing is official OCBC advice.
+- **2026-07-19** — *errors-audit-deep.* Harvested 4 undocumented incidents from terminal logs and git history: yfinance curl_cffi proxy 403, HTMX indicator destroyed by swap target, span-role-button ARIA nesting, dotenv leaking API keys into pytest. 4 new solution docs written and validated; LEARNINGS incidents #2–#5 added.
+- **2026-07-19** — *Context distillation health check.* Generated `context/context-2026-07-19.md` after PRD completion and UI enhancement sprint; 9 bugs catalogued (7 fixed, 2 open: stale fallback headlines + CSS static versioning process gap); 27/27 tests green at HEAD `4e49812`.
+- **2026-07-18** — *Bookmarks RAG hardening verified and prep synced.* Reviewed the completed credibility PRD on `main`, confirmed 83 tests passing with 93% application coverage, and updated the interview prep for robots enforcement, `llama3.2:3b`, Docker-served React, tested library-only streaming, config failures, and precise local-first privacy wording.
 - **2026-07-18** — *Interview prep tone pass.* Rewrote `OCBC_AI_Lab_Interview_Prep.md` away from apology/"I made a mistake" framing toward precise prototype-scope and wording-tighten language (resume §9 playbook, Ports conference-demo quote, fabricated→illustrative).
 - **2026-07-18** — *gstack added to the development workflow.* Installed gstack 1.60.1.0 globally for Cursor and documented the repo’s core gstack commands without vendoring third-party code; worked around an upstream Cursor-host/setup mismatch and missing `bunx`.
+- **2026-07-18** — *QA pass on wealth-brief app (local).* Found and fixed two bugs: `#brief-loader` inside `#brief-region` was destroyed by HTMX on first swap (no spinner on re-generation); `<span role="button">` for info tooltip caused browse @ref resolution failures. Both fixed; 27 tests still green.
 - **2026-07-18** — *Demo enhancements: A3 + A1 + RM buttons.* Added US 10Y Yield (`^TNX`) to market snapshot (8 series), a Fear & Greed sentiment bar (VIX 60% + S&P 10-day momentum 40%, 0–100 scale, gradient bar with needle + ⓘ tooltip), RM contact buttons (Call + Message) in the brief partial, and reordered page so Today's Brief appears first. 27/27 tests green.
 - **2026-07-18** — *Task 6.0 done (demo polish).* README + live URL; 10/10 stress generations with Finnhub fallback verified; demo narrative run 3× on Railway (V1 + two personas); `.env` not tracked. PRD task list **complete**.
 - **2026-07-18** — *Task 5.0 done (V2 persona).* Added Client Profile form (tier/goal/assets≤2/geography) with HTMX regenerate that reuses in-page snapshot; FR-15 live check: 3 personas from identical data differed (jaccard ~0.23–0.25). **22 tests** green.

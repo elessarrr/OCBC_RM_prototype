@@ -26,6 +26,9 @@ logger = logging.getLogger(__name__)
 
 SGT = ZoneInfo("Asia/Singapore")
 
+# Kept in code for RM workflow demos; off so the page reads as a morning brief.
+SHOW_CLIENT_EMAIL_DRAFT = False
+
 app = FastAPI(title="Wealth Morning Brief")
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -110,6 +113,7 @@ async def generate(
             "watch": result.get("watch") or [],
             "house_view": result.get("house_view") or [],
             "email_draft": result.get("email_draft") or "",
+            "show_email_draft": SHOW_CLIENT_EMAIL_DRAFT,
         },
     )
 
