@@ -6,7 +6,7 @@ AI Lab interview prototype: a single-page FastAPI app that pulls live (or last-c
 
 **Live demo:** https://ocbcrmprototype-production.up.railway.app
 
-**PRD:** [`tasks/0001-prd-wealth-market-brief-generator.md`](../tasks/0001-prd-wealth-market-brief-generator.md)
+**PRDs:** [Core generator](../tasks/0001-prd-wealth-market-brief-generator.md) · [WoW-aligned demo enhancements](../tasks/0002-prd-wow-aligned-demo-enhancements.md)
 
 ## Stack
 
@@ -52,11 +52,38 @@ Never commit `.env`.
 ## Demo notes
 
 1. Open the page — market snapshot paints first; brief spinner then narrative (or safe fallback).
-2. Fill **Client Profile** (tier / goal / ≤2 asset classes / geography) → **Generate My Brief**.
-3. Switch persona and regenerate: **same numbers**, different framing + badge.
-4. Copy button copies the brief text.
+2. Select a persona chip, optionally edit the profile and portfolio mix, then press **Generate My Brief**.
+3. Review the grounded brief, demo investment ideas, three-item watchlist, and explicitly simulated research view.
+4. Copy the fixed client-email draft with `[CLIENT_NAME]` and `[RM_NAME]` placeholders.
+5. Switch persona and regenerate: **same numbers**, different framing + badge.
 
 Graceful degradation is intentional: Finnhub or DeepSeek failures must never blank the snapshot.
+
+DeepSeek returns the brief, ideas, watchlist, and simulated research view in one structured plain-text response. A separate WATCH call is a fallback only if production evaluation shows that the one-call output is not reliable enough.
+
+### Production research path (V3)
+
+The prototype uses public market data and AI-generated demonstration content. It does not present official OCBC research, advice, or recommendations.
+
+A production version can restrict generation to bank-approved proprietary research:
+
+1. Ingest approved research documents with source, owner, publication date, jurisdiction, and expiry metadata.
+2. Parse and chunk documents while preserving citations and access controls.
+3. Index approved chunks in a permission-aware retrieval store.
+4. Retrieve only current, authorised passages for the RM and client context.
+5. Generate from those passages with source citations; refuse unsupported claims.
+6. Log retrieved sources, prompt version, model version, and final output for audit.
+
+**Interviewer one-liner:** “Today this demonstrates the RM content workflow; V3 replaces open-ended generation with governed retrieval from bank-approved research.”
+
+### UI copy audit
+
+Before a demo or release:
+
+- Reject positive claims such as “OCBC recommends”, “official OCBC view”, or “OCBC advice”.
+- Label generated ideas as **demo** and generated house views as **simulated** and **not official OCBC research**.
+- Keep the persistent prototype/non-advice footer and the email-template disclaimer visible.
+- Describe the production research path as a future governed capability, not a current integration.
 
 ## Tests
 

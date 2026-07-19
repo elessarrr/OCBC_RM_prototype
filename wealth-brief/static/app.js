@@ -50,6 +50,25 @@
     );
   }
 
+  async function writeClipboard(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    const copied = document.execCommand("copy");
+    textarea.remove();
+    if (copied) return;
+
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+    throw new Error("Clipboard copy unavailable");
+  }
+
   function syncAssetLimit() {
     if (!profileForm) return true;
     const checked = selectedAssets();
@@ -148,7 +167,7 @@
       if (!textEl) return;
       const text = textEl.innerText.trim();
       try {
-        await navigator.clipboard.writeText(text);
+        await writeClipboard(text);
         copyBtn.textContent = "Copied";
         window.setTimeout(function () {
           copyBtn.textContent = "Copy";
@@ -165,7 +184,7 @@
     const draft = document.getElementById("client-email-draft");
     if (!draft) return;
     try {
-      await navigator.clipboard.writeText(draft.innerText.trim());
+      await writeClipboard(draft.innerText.trim());
       button.textContent = "Copied";
       window.setTimeout(function () {
         button.textContent = "Copy email";

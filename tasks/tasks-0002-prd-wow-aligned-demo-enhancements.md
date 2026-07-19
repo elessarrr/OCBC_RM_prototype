@@ -69,16 +69,16 @@
   - [x] 6.3 Extend chip prefill in `app.js` with a sample mix string per preset (editable before Generate) (FR-33)
   - [x] 6.4 Tests: prompt includes mix when provided; omit when blank; existing no-profile / V1 path unchanged
 
-- [ ] 7.0 Simulated house-view card (FR-34–35)
+- [x] 7.0 Simulated house-view card (FR-34–35)
   - [x] 7.1 Render card titled e.g. **Simulated research view (demo) — not OCBC official research** when `ok` and house_view bullets exist
   - [x] 7.2 Soft-fail: if HOUSE_VIEW missing, hide card or show 2–3 static demo bullets labelled as placeholder — never crash
   - [x] 7.3 CSS: simple section consistent with ideas/watch; not a busy dashboard card
   - [x] 7.4 Tests cover present bullets + missing-block soft-fail path
 
 - [ ] 8.0 Tests, README V3 path, copy audit, demo smoke (FR-38–39)
-  - [ ] 8.1 Full regression: `pytest -q` from `wealth-brief/` green
-  - [ ] 8.2 Update `README.md`: link PRD 0002; summarise new panels; document V3 ingestion path (§10 of PRD) and interviewer one-liner; note no official OCBC claims
-  - [ ] 8.3 Add a short copy-audit checklist to README (or PR description template): forbidden phrases + required “demo/simulated” labels
-  - [ ] 8.4 Optional: add `ResearchSource` stub module returning empty/demo passages (no real corpus) — skip if time-boxed; do not build full pipeline
-  - [ ] 8.5 Manual demo narrative 2×: chip → optional edit → Generate → brief + ideas + watch + email copy + footer visible; second chip → Generate again with same snapshot numbers
+  - [x] 8.1 Full regression: `pytest -q` from `wealth-brief/` green
+  - [x] 8.2 Update `README.md`: link PRD 0002; summarise new panels; document V3 ingestion path (§10 of PRD) and interviewer one-liner; note no official OCBC claims
+  - [x] 8.3 Add a short copy-audit checklist to README (or PR description template): forbidden phrases + required “demo/simulated” labels
+  - [x] 8.4 Optional: add `ResearchSource` stub module returning empty/demo passages (no real corpus) — skipped; README documents the V3 boundary without adding unused production code
+  - [x] 8.5 Manual demo narrative 2×: chip → optional edit → Generate → brief + ideas + watch + email copy + footer visible; second chip → Generate again with same snapshot numbers
   - [ ] 8.6 Deploy/smoke on Railway when local DoD met; confirm disclaimer + soft-fail still hold remotely
