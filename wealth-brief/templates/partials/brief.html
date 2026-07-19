@@ -16,6 +16,16 @@
   </ul>
 </section>
 {% endif %}
+{% if ok and email_draft %}
+<section class="brief-section email-draft-section" aria-labelledby="email-draft-heading">
+  <div class="brief-section-header">
+    <h3 id="email-draft-heading">Draft email to client</h3>
+    <button type="button" id="copy-email" class="ghost-btn">Copy email</button>
+  </div>
+  <pre id="client-email-draft" class="email-draft">{{ email_draft }}</pre>
+  <p class="demo-note">Template for demo only — not an official OCBC communication.</p>
+</section>
+{% endif %}
 <div class="rm-cta-section">
   <p class="rm-cta-label">Ready to act on this? Talk to your Relationship Manager.</p>
   <div class="rm-actions">

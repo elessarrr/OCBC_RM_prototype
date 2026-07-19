@@ -186,7 +186,23 @@ def _failure_result(badge: str | None) -> dict[str, Any]:
         "ideas": [],
         "watch": [],
         "house_view": [],
+        "email_draft": "",
     }
+
+
+def build_client_email(brief_text: str) -> str:
+    """Wrap a generated brief in the fixed demonstration email template."""
+    brief = brief_text.strip()
+    return f"""Dear [CLIENT_NAME],
+
+Hope you're doing well. We wanted to share our perspective on the markets today, and what it means for your portfolio.
+
+{brief}
+
+We'd be happy to discuss any next steps.
+
+Thanks,
+[RM_NAME]"""
 
 
 def generate_brief(
@@ -236,6 +252,7 @@ def generate_brief(
             "ideas": parsed["ideas"],
             "watch": parsed["watch"],
             "house_view": parsed["house_view"],
+            "email_draft": build_client_email(narrative),
         }
     except Exception:
         logger.exception("DeepSeek brief generation failed")

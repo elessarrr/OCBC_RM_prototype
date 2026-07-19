@@ -204,6 +204,18 @@ body {
   font-size: 0.85rem;
 }
 
+.brief-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.brief-section-header h3 {
+  margin: 0;
+}
+
 .brief-section ul {
   margin: 0;
   padding-left: 1.15rem;
@@ -211,6 +223,25 @@ body {
 
 .brief-section li {
   margin-bottom: 0.35rem;
+}
+
+.email-draft {
+  margin: 0;
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--white);
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.demo-note {
+  margin: 0.5rem 0 0;
+  color: var(--flat-grey);
+  font-size: 0.75rem;
 }
 
 .loading-block {

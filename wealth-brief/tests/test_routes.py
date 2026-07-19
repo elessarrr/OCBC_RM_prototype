@@ -146,6 +146,37 @@ def test_generate_renders_demo_investment_ideas(mock_gen) -> None:
     assert "Keep selective exposure to dividend equities." in response.text
 
 
+@patch("main.generate_brief")
+def test_generate_renders_fixed_client_email_draft(mock_gen) -> None:
+    mock_gen.return_value = {
+        "ok": True,
+        "text": "Markets were mixed. Maintain selective exposure.",
+        "badge": None,
+        "ideas": [],
+        "watch": [],
+        "house_view": [],
+        "email_draft": (
+            "Dear [CLIENT_NAME],\n\nMarkets were mixed.\n\nThanks,\n[RM_NAME]"
+        ),
+    }
+
+    response = client.post(
+        "/generate",
+        data={
+            "snapshot_json": json.dumps(FAKE_SNAPSHOT),
+            "headlines_json": json.dumps(FAKE_NEWS["headlines"]),
+        },
+    )
+
+    assert response.status_code == 200
+    assert "Draft email to client" in response.text
+    assert "Dear [CLIENT_NAME]" in response.text
+    assert "[RM_NAME]" in response.text
+    assert "Copy email" in response.text
+    assert "Template for demo only" in response.text
+    assert "not an official OCBC communication" in response.text
+
+
 @patch("main.fetch_market_snapshot")
 @patch("main.generate_brief")
 def test_generate_with_profile_reuses_snapshot_not_yfinance(

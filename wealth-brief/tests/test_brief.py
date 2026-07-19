@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, patch
 from llm.brief import (
     BRIEF_UNAVAILABLE_USER_MESSAGE,
     MODEL,
+    build_client_email,
     build_persona_badge,
     build_system_prompt,
     build_user_prompt,
@@ -91,6 +92,23 @@ def test_parse_structured_brief_response_soft_fails_missing_blocks() -> None:
     assert parsed["ideas"] == []
     assert parsed["watch"] == []
     assert parsed["house_view"] == []
+
+
+def test_build_client_email_wraps_brief_in_canonical_template() -> None:
+    brief = "Markets were mixed overnight.\n\nStay selective into the close."
+
+    assert build_client_email(brief) == """Dear [CLIENT_NAME],
+
+Hope you're doing well. We wanted to share our perspective on the markets today, and what it means for your portfolio.
+
+Markets were mixed overnight.
+
+Stay selective into the close.
+
+We'd be happy to discuss any next steps.
+
+Thanks,
+[RM_NAME]"""
 
 
 def test_build_user_prompt_includes_figures_and_headlines() -> None:
@@ -187,6 +205,9 @@ HOUSE_VIEW:
         "Maintain balanced positioning.",
         "Prefer quality income.",
     ]
+    assert result["email_draft"].startswith("Dear [CLIENT_NAME],")
+    assert "Markets were mixed today." in result["email_draft"]
+    assert result["email_draft"].endswith("[RM_NAME]")
     mock_openai_cls.assert_called_once()
     assert mock_openai_cls.call_args.kwargs["base_url"] == "https://api.deepseek.com"
     client.chat.completions.create.assert_called_once()
@@ -217,6 +238,7 @@ def test_generate_brief_graceful_on_api_error(mock_openai_cls: MagicMock) -> Non
     assert result["ideas"] == []
     assert result["watch"] == []
     assert result["house_view"] == []
+    assert result["email_draft"] == ""
     assert "401" not in result["text"]
     assert "secret-key" not in result["text"]
 
@@ -234,3 +256,4 @@ def test_generate_brief_without_api_key(monkeypatch) -> None:
     assert result["ideas"] == []
     assert result["watch"] == []
     assert result["house_view"] == []
+    assert result["email_draft"] == ""

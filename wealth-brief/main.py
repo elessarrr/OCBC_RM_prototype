@@ -105,6 +105,7 @@ async def generate(
             "ideas": result.get("ideas") or [],
             "watch": result.get("watch") or [],
             "house_view": result.get("house_view") or [],
+            "email_draft": result.get("email_draft") or "",
         },
     )
 

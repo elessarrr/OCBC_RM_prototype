@@ -36,7 +36,7 @@
   - [x] 1.4 Style chips in `style.css` as secondary/outline controls; active state clear; do not compete visually with the primary Generate CTA
   - [x] 1.5 Manual check: each chip fills a valid, submittable form without validation errors
 
-- [ ] 2.0 Structured one-call LLM output + Investment ideas panel (FR-23–25, FR-37)
+- [x] 2.0 Structured one-call LLM output + Investment ideas panel (FR-23–25, FR-37)
   - [x] 2.1 RED: add `tests/test_brief.py` cases for parsing a labelled multi-block response (`BRIEF`, `INVESTMENT_IDEAS`, `WATCH`, `HOUSE_VIEW`) and for missing blocks soft-fail
   - [x] 2.2 Implement `parse_structured_brief_response()` (or equivalent) in `llm/brief.py` returning `{ paragraphs, ideas, watch, house_view }` with empty lists when markers absent
   - [x] 2.3 Update system/user prompts so DeepSeek returns the labelled plain-text contract (no markdown); keep V1/V2 persona guidance; never invent prices/news not in the payload
@@ -45,11 +45,11 @@
   - [x] 2.6 GREEN: run `pytest tests/test_brief.py` then extend `test_routes.py` mock so `/generate` HTML includes the demo ideas heading when mocked structured content is returned
 
 - [ ] 3.0 Draft client email from fixed boilerplate + brief (FR-26–28)
-  - [ ] 3.1 RED: unit test that `build_client_email(brief_text)` wraps paragraphs in the PRD canonical template with `[CLIENT_NAME]` and `[RM_NAME]` placeholders (exact boilerplate)
-  - [ ] 3.2 Implement `build_client_email()` in `llm/brief.py` (or small helper module); use parsed BRIEF text only — no second LLM call
-  - [ ] 3.3 In `brief.html`, when `ok`, show Draft email block (preformatted) + Copy button + one-line “Template for demo only — not an official OCBC communication.”
-  - [ ] 3.4 In `app.js`, wire copy for the email draft (reuse/extend existing clipboard helper); do not break brief copy if still present
-  - [ ] 3.5 GREEN: route/partial test asserts email placeholders and demo disclaimer string appear on successful generate
+  - [x] 3.1 RED: unit test that `build_client_email(brief_text)` wraps paragraphs in the PRD canonical template with `[CLIENT_NAME]` and `[RM_NAME]` placeholders (exact boilerplate)
+  - [x] 3.2 Implement `build_client_email()` in `llm/brief.py` (or small helper module); use parsed BRIEF text only — no second LLM call
+  - [x] 3.3 In `brief.html`, when `ok`, show Draft email block (preformatted) + Copy button + one-line “Template for demo only — not an official OCBC communication.”
+  - [x] 3.4 In `app.js`, wire copy for the email draft (reuse/extend existing clipboard helper); do not break brief copy if still present
+  - [x] 3.5 GREEN: route/partial test asserts email placeholders and demo disclaimer string appear on successful generate
 
 - [ ] 4.0 What to watch today panel (FR-29–30)
   - [ ] 4.1 Ensure prompt asks for exactly 3 short WATCH lines (≤ ~12 words); parser yields up to 3 items

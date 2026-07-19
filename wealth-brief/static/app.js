@@ -152,4 +152,20 @@
       }
     });
   }
+
+  document.addEventListener("click", async function (event) {
+    const button = event.target.closest("#copy-email");
+    if (!button) return;
+    const draft = document.getElementById("client-email-draft");
+    if (!draft) return;
+    try {
+      await navigator.clipboard.writeText(draft.innerText.trim());
+      button.textContent = "Copied";
+      window.setTimeout(function () {
+        button.textContent = "Copy email";
+      }, 1500);
+    } catch (_) {
+      button.textContent = "Copy failed";
+    }
+  });
 })();
