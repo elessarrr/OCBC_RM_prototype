@@ -107,6 +107,16 @@
         <h2 id="profile-heading">Client Profile</h2>
         <p class="source-note">Complete in under 30 seconds</p>
       </div>
+      <div class="persona-presets" aria-label="Client profile presets">
+        <p class="persona-presets-label">Quick select a profile</p>
+        <div class="persona-chip-row">
+          <button type="button" class="persona-chip" data-persona="conservative-hnw-sg">Conservative HNW · Singapore</button>
+          <button type="button" class="persona-chip" data-persona="income-affluent-asia">Income · Affluent · Asia</button>
+          <button type="button" class="persona-chip" data-persona="growth-hnw-global">Growth · HNW · Global</button>
+          <button type="button" class="persona-chip" data-persona="legacy-uhnw-sg">Legacy · UHNW · Singapore</button>
+        </div>
+        <p class="persona-presets-hint">Select a starting point, adjust any field, then press Generate.</p>
+      </div>
       <form id="client-profile"
             class="profile-form"
             hx-post="/generate"

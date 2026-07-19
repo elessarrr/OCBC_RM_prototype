@@ -265,6 +265,58 @@ body {
   gap: 0.85rem;
 }
 
+.persona-presets {
+  margin-bottom: 1rem;
+}
+
+.persona-presets-label,
+.persona-presets-hint {
+  margin: 0;
+}
+
+.persona-presets-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.persona-presets-hint {
+  margin-top: 0.45rem;
+  font-size: 0.78rem;
+  color: var(--flat-grey);
+}
+
+.persona-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.persona-chip {
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--text);
+  padding: 0.45rem 0.75rem;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.persona-chip:hover,
+.persona-chip:focus-visible {
+  border-color: var(--brand-red);
+  color: var(--badge-text);
+  outline: none;
+}
+
+.persona-chip.is-active {
+  border-color: var(--brand-red);
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  box-shadow: 0 0 0 1px var(--brand-red);
+}
+
 .profile-field {
   margin: 0;
   padding: 0.75rem 0.85rem;

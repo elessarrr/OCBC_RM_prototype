@@ -4,6 +4,40 @@
   const copyBtn = document.getElementById("copy-brief");
   const profileForm = document.getElementById("client-profile");
   const assetLimitMsg = document.getElementById("asset-limit-msg");
+  const personaChips = Array.from(document.querySelectorAll(".persona-chip"));
+
+  const personaPresets = {
+    "conservative-hnw-sg": {
+      tier: "High Net Worth",
+      goal: "Capital Preservation",
+      geography: "Singapore-centric",
+      assets: ["Fixed Income / Bonds", "Equities (Singapore / Asia)"],
+    },
+    "income-affluent-asia": {
+      tier: "Mass Affluent",
+      goal: "Income Generation",
+      geography: "Regional Asia",
+      assets: [
+        "Fixed Income / Bonds",
+        "Real Assets (Property, REITs, Infrastructure)",
+      ],
+    },
+    "growth-hnw-global": {
+      tier: "High Net Worth",
+      goal: "Aggressive Growth",
+      geography: "Global",
+      assets: ["Global Equities", "Commodities"],
+    },
+    "legacy-uhnw-sg": {
+      tier: "Ultra High Net Worth",
+      goal: "Legacy / Estate Planning",
+      geography: "Singapore-centric",
+      assets: [
+        "Equities (Singapore / Asia)",
+        "Real Assets (Property, REITs, Infrastructure)",
+      ],
+    },
+  };
 
   function selectedAssets() {
     if (!profileForm) return [];
@@ -26,6 +60,34 @@
     return !over;
   }
 
+  function selectRadio(name, value) {
+    const radios = profileForm.querySelectorAll('input[name="' + name + '"]');
+    radios.forEach(function (radio) {
+      radio.checked = radio.value === value;
+    });
+  }
+
+  function applyPersonaPreset(key) {
+    if (!profileForm || !personaPresets[key]) return;
+    const preset = personaPresets[key];
+    selectRadio("tier", preset.tier);
+    selectRadio("goal", preset.goal);
+    selectRadio("geography", preset.geography);
+
+    const boxes = profileForm.querySelectorAll('input[name="asset_classes"]');
+    boxes.forEach(function (box) {
+      box.disabled = false;
+      box.checked = preset.assets.includes(box.value);
+    });
+    syncAssetLimit();
+
+    personaChips.forEach(function (chip) {
+      const active = chip.dataset.persona === key;
+      chip.classList.toggle("is-active", active);
+      chip.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+  }
+
   if (profileForm) {
     profileForm.addEventListener("change", function (event) {
       if (event.target && event.target.name === "asset_classes") {
@@ -40,6 +102,13 @@
     });
     syncAssetLimit();
   }
+
+  personaChips.forEach(function (chip) {
+    chip.setAttribute("aria-pressed", "false");
+    chip.addEventListener("click", function () {
+      applyPersonaPreset(chip.dataset.persona);
+    });
+  });
 
   if (region && slowMsg) {
     let timer = null;
