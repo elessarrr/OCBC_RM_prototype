@@ -26,6 +26,16 @@
   </ul>
 </section>
 {% endif %}
+{% if ok and house_view %}
+<section class="brief-section research-view" aria-labelledby="research-view-heading">
+  <h3 id="research-view-heading">Simulated research view (demo) — not official OCBC research</h3>
+  <ul>
+    {% for item in house_view %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
 {% if ok and email_draft %}
 <section class="brief-section email-draft-section" aria-labelledby="email-draft-heading">
   <div class="brief-section-header">

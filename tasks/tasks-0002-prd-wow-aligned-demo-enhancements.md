@@ -63,17 +63,17 @@
   - [x] 5.3 Grep UI copy for forbidden claims (“OCBC recommends”, “official OCBC view”, etc.) and fix any hits
   - [x] 5.4 Route test: `GET /` response contains key disclaimer phrases
 
-- [ ] 6.0 Optional portfolio mix field (FR-31–33)
+- [x] 6.0 Optional portfolio mix field (FR-31–33)
   - [x] 6.1 Add optional text input `portfolio_mix` to the profile form (placeholder e.g. `60% equities / 30% bonds / 10% gold`); empty allowed
   - [x] 6.2 Accept `portfolio_mix` on `POST /generate`; include in profile dict and system/user prompt when non-empty (FR-32)
   - [x] 6.3 Extend chip prefill in `app.js` with a sample mix string per preset (editable before Generate) (FR-33)
   - [x] 6.4 Tests: prompt includes mix when provided; omit when blank; existing no-profile / V1 path unchanged
 
 - [ ] 7.0 Simulated house-view card (FR-34–35)
-  - [ ] 7.1 Render card titled e.g. **Simulated research view (demo) — not OCBC official research** when `ok` and house_view bullets exist
-  - [ ] 7.2 Soft-fail: if HOUSE_VIEW missing, hide card or show 2–3 static demo bullets labelled as placeholder — never crash
-  - [ ] 7.3 CSS: simple section consistent with ideas/watch; not a busy dashboard card
-  - [ ] 7.4 Tests cover present bullets + missing-block soft-fail path
+  - [x] 7.1 Render card titled e.g. **Simulated research view (demo) — not OCBC official research** when `ok` and house_view bullets exist
+  - [x] 7.2 Soft-fail: if HOUSE_VIEW missing, hide card or show 2–3 static demo bullets labelled as placeholder — never crash
+  - [x] 7.3 CSS: simple section consistent with ideas/watch; not a busy dashboard card
+  - [x] 7.4 Tests cover present bullets + missing-block soft-fail path
 
 - [ ] 8.0 Tests, README V3 path, copy audit, demo smoke (FR-38–39)
   - [ ] 8.1 Full regression: `pytest -q` from `wealth-brief/` green

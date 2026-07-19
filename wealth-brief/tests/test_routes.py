@@ -243,6 +243,37 @@ def test_generate_hides_incomplete_what_to_watch_without_failing_brief(mock_gen)
     assert response.status_code == 200
     assert "The grounded brief still renders." in response.text
     assert "What to watch today" not in response.text
+    assert "Simulated research view" not in response.text
+
+
+@patch("main.generate_brief")
+def test_generate_renders_simulated_research_view(mock_gen) -> None:
+    mock_gen.return_value = {
+        "ok": True,
+        "text": "Markets were mixed.",
+        "badge": None,
+        "ideas": [],
+        "watch": [],
+        "house_view": [
+            "Maintain balanced positioning.",
+            "Prefer quality income over momentum.",
+        ],
+        "email_draft": "",
+    }
+
+    response = client.post(
+        "/generate",
+        data={
+            "snapshot_json": json.dumps(FAKE_SNAPSHOT),
+            "headlines_json": json.dumps(FAKE_NEWS["headlines"]),
+        },
+    )
+
+    assert response.status_code == 200
+    assert "Simulated research view (demo)" in response.text
+    assert "not official OCBC research" in response.text
+    assert "Maintain balanced positioning." in response.text
+    assert "Prefer quality income over momentum." in response.text
 
 
 @patch("main.fetch_market_snapshot")
