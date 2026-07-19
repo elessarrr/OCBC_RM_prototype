@@ -9,8 +9,10 @@ import pytest
 
 from data.fallback_headlines import FALLBACK_HEADLINES
 from data.market import (
+    FINANCIAL_KEYWORDS,
     HEADLINE_LIMIT,
     SYMBOLS,
+    _is_financial_headline,
     _sentiment_label,
     arrow_for_change,
     compute_sentiment,
@@ -164,11 +166,11 @@ def test_fetch_market_snapshot_last_close_when_flat(mock_ticker_cls: MagicMock) 
 @patch("data.market.httpx.get")
 def test_fetch_headlines_happy_path_includes_urls_and_cap(mock_get: MagicMock) -> None:
     general = [
-        {"headline": f"General story {i}", "url": f"https://example.com/g{i}"}
+        {"headline": f"Fed signals rate {i}", "url": f"https://example.com/g{i}"}
         for i in range(1, 8)
     ]
     forex = [
-        {"headline": f"Forex story {i}", "url": f"https://example.com/f{i}"}
+        {"headline": f"USD/SGD forex move {i}", "url": f"https://example.com/f{i}"}
         for i in range(1, 6)
     ]
     mock_get.side_effect = [
@@ -189,9 +191,74 @@ def test_fetch_headlines_happy_path_includes_urls_and_cap(mock_get: MagicMock) -
     assert len(result["headlines"]) == HEADLINE_LIMIT
     assert HEADLINE_LIMIT == 10
     first = result["headlines"][0]
-    assert first["title"] == "General story 1"
-    assert first["url"] == "https://example.com/g1"
+    assert "Fed" in first["title"] or "USD" in first["title"]
+    assert first["url"].startswith("https://example.com/")
     assert all(h.get("url") for h in result["headlines"])
+
+
+def test_is_financial_headline_accepts_market_terms() -> None:
+    assert _is_financial_headline("Fed signals rate cut next quarter")
+    assert _is_financial_headline("S&P 500 hits record high on earnings beat")
+    assert _is_financial_headline("USD/SGD steady ahead of inflation print")
+    assert _is_financial_headline("Brent crude slides as OPEC signals output hike")
+    assert _is_financial_headline("Singapore GDP growth beats forecast")
+
+
+def test_is_financial_headline_rejects_non_financial_news() -> None:
+    assert not _is_financial_headline("UFC champion defends title at MSG")
+    assert not _is_financial_headline("Premier League results: Arsenal 2-1 City")
+    assert not _is_financial_headline("Celebrity couple announces wedding date")
+
+
+@patch("data.market.httpx.get")
+def test_fetch_headlines_filters_general_keeps_forex(mock_get: MagicMock) -> None:
+    """Non-financial general headlines are dropped; all forex headlines pass through."""
+    general = [
+        {"headline": "UFC fighter signs new deal", "url": "https://example.com/ufc"},
+        {"headline": "Markets rally on Fed rate outlook", "url": "https://example.com/fed"},
+        {"headline": "Celebrity news dominates weekend", "url": "https://example.com/cel"},
+        {"headline": "Oil prices rise on OPEC cut", "url": "https://example.com/oil"},
+    ]
+    forex = [
+        {"headline": "EUR/USD ticks higher on ECB minutes", "url": "https://example.com/eur"},
+    ]
+    mock_get.side_effect = [
+        MagicMock(status_code=200, json=lambda: general, raise_for_status=lambda: None),
+        MagicMock(status_code=200, json=lambda: forex, raise_for_status=lambda: None),
+    ]
+
+    result = fetch_headlines(api_key="test-key")
+    titles = [h["title"] for h in result["headlines"]]
+
+    assert "UFC fighter signs new deal" not in titles
+    assert "Celebrity news dominates weekend" not in titles
+    assert "Markets rally on Fed rate outlook" in titles
+    assert "Oil prices rise on OPEC cut" in titles
+    assert "EUR/USD ticks higher on ECB minutes" in titles
+
+
+@patch("data.market.httpx.get")
+def test_fetch_headlines_includes_unfiltered_overflow_to_reach_minimum(
+    mock_get: MagicMock,
+) -> None:
+    """If filtered pool < 3, pull in enough unfiltered general headlines to avoid fallback."""
+    general = [
+        {"headline": "UFC event preview", "url": "https://example.com/ufc"},
+        {"headline": "Dana White confirms card", "url": "https://example.com/dana"},
+        {"headline": "Sports roundup Saturday", "url": "https://example.com/sport"},
+    ]
+    forex = [
+        {"headline": "USD/SGD steady ahead of CPI", "url": "https://example.com/sgd"},
+        {"headline": "EUR/USD holds range", "url": "https://example.com/eur"},
+    ]
+    mock_get.side_effect = [
+        MagicMock(status_code=200, json=lambda: general, raise_for_status=lambda: None),
+        MagicMock(status_code=200, json=lambda: forex, raise_for_status=lambda: None),
+    ]
+
+    result = fetch_headlines(api_key="test-key")
+    assert result["source"] == "finnhub"
+    assert len(result["headlines"]) >= 3
 
 
 @patch("data.market.httpx.get")

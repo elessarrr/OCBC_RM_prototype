@@ -19,6 +19,38 @@ SGT = ZoneInfo("Asia/Singapore")
 HEADLINE_LIMIT = 10
 FINNHUB_NEWS_URL = "https://finnhub.io/api/v1/news"
 
+# Terms that indicate a headline is relevant to a wealth / morning brief.
+# Forex headlines bypass this filter entirely (already on-topic by category).
+FINANCIAL_KEYWORDS: frozenset[str] = frozenset([
+    "rate", "rates", "fed", "federal reserve", "central bank",
+    "inflation", "gdp", "yield", "yields", "bond", "bonds",
+    "equity", "equities", "stock", "stocks", "market", "markets",
+    "trading", "trade", "earnings", "revenue", "profit",
+    "economic", "economy", "fiscal", "monetary",
+    "currency", "dollar", "euro", "yen", "sgd",
+    "oil", "crude", "gold", "commodity", "commodities",
+    "index", "indices", "fund", "hedge",
+    "investment", "investor", "investors",
+    "bank", "banking", "finance", "financial",
+    "debt", "deficit", "surplus", "growth", "recession",
+    "credit", "risk", "volatility", "nasdaq", "dow", "s&p",
+    "nikkei", "sti", "hang seng", "brent", "opec",
+    "treasury", "ipo", "acquisition", "merger",
+    "dividend", "buyback", "quarter", "quarterly",
+    "forecast", "outlook", "tariff", "tariffs",
+    "sanction", "sanctions", "export", "import",
+    "pmi", "cpi", "pce", "nonfarm", "payroll", "unemployment",
+    "interest", "hike", "cut", "pivot", "tightening", "easing",
+    "rally", "selloff", "correction", "bull", "bear",
+    "singapore", "china", "asia", "macro",
+])
+
+
+def _is_financial_headline(title: str) -> bool:
+    """Return True if the headline contains at least one financial keyword."""
+    lower = title.lower()
+    return any(kw in lower for kw in FINANCIAL_KEYWORDS)
+
 SYMBOLS: list[dict[str, str]] = [
     {"symbol": "^STI", "label": "STI"},
     {"symbol": "^GSPC", "label": "S&P 500"},
@@ -181,7 +213,12 @@ def _finnhub_category(api_key: str, category: str, timeout: float = 8.0) -> list
 
 
 def fetch_headlines(api_key: str | None = None) -> dict[str, Any]:
-    """Fetch general + forex headlines; fall back to static list on any failure."""
+    """Fetch general + forex headlines; fall back to static list on any failure.
+
+    General headlines are filtered to financial topics via FINANCIAL_KEYWORDS.
+    If the filtered pool would drop below 3, unfiltered general headlines are
+    appended as overflow so the demo never goes blank.
+    """
     key = api_key if api_key is not None else os.environ.get("FINNHUB_API_KEY")
     if not key:
         logger.warning("FINNHUB_API_KEY missing; using fallback headlines")
@@ -190,17 +227,35 @@ def fetch_headlines(api_key: str | None = None) -> dict[str, Any]:
     try:
         general = _finnhub_category(key, "general")
         forex = _finnhub_category(key, "forex")
+
+        # Forex is already on-topic; general gets keyword-filtered.
+        financial_general = [h for h in general if _is_financial_headline(h["title"])]
+        other_general = [h for h in general if not _is_financial_headline(h["title"])]
+
+        # Combine: filtered general first, then forex, then overflow if needed.
         combined: list[dict[str, str]] = []
         seen: set[str] = set()
-        for item in general + forex:
-            title = item["title"]
-            if title not in seen:
-                seen.add(title)
-                combined.append(item)
-            if len(combined) >= HEADLINE_LIMIT:
-                break
+
+        def _add(items: list[dict[str, str]]) -> None:
+            for item in items:
+                title = item["title"]
+                if title not in seen:
+                    seen.add(title)
+                    combined.append(item)
+                if len(combined) >= HEADLINE_LIMIT:
+                    return
+
+        _add(financial_general)
+        _add(forex)
+
+        # Soft overflow: pull in non-financial general headlines only if the
+        # combined pool is still too thin to be useful.
         if len(combined) < 3:
-            raise ValueError("Fewer than 3 headlines from Finnhub")
+            _add(other_general)
+
+        if len(combined) < 3:
+            raise ValueError("Fewer than 3 headlines from Finnhub after filtering")
+
         return {"source": "finnhub", "headlines": combined}
     except Exception as exc:
         logger.warning("Finnhub unavailable (%s); using fallback headlines", exc)
