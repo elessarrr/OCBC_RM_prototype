@@ -57,17 +57,17 @@
   - [x] 4.3 Document in code comment (and later README in 8.0) that default is one structured call; separate WATCH call is fallback only if quality is poor
   - [x] 4.4 Extend tests: happy path with 3 watch items; missing WATCH block does not fail the whole brief
 
-- [ ] 5.0 Persistent footer disclaimer (FR-36, FR-38 start)
+- [x] 5.0 Persistent footer disclaimer (FR-36, FR-38 start)
   - [x] 5.1 Add site footer on `index.html` stating: demonstration prototype; public market data + AI-generated demo narrative/ideas; **not** official OCBC research/advice/recommendation; production path can restrict generation to approved proprietary research
   - [x] 5.2 Style footer muted/small; always present on `GET /` without a modal
   - [x] 5.3 Grep UI copy for forbidden claims (“OCBC recommends”, “official OCBC view”, etc.) and fix any hits
   - [x] 5.4 Route test: `GET /` response contains key disclaimer phrases
 
 - [ ] 6.0 Optional portfolio mix field (FR-31–33)
-  - [ ] 6.1 Add optional text input `portfolio_mix` to the profile form (placeholder e.g. `60% equities / 30% bonds / 10% gold`); empty allowed
-  - [ ] 6.2 Accept `portfolio_mix` on `POST /generate`; include in profile dict and system/user prompt when non-empty (FR-32)
-  - [ ] 6.3 Extend chip prefill in `app.js` with a sample mix string per preset (editable before Generate) (FR-33)
-  - [ ] 6.4 Tests: prompt includes mix when provided; omit when blank; existing no-profile / V1 path unchanged
+  - [x] 6.1 Add optional text input `portfolio_mix` to the profile form (placeholder e.g. `60% equities / 30% bonds / 10% gold`); empty allowed
+  - [x] 6.2 Accept `portfolio_mix` on `POST /generate`; include in profile dict and system/user prompt when non-empty (FR-32)
+  - [x] 6.3 Extend chip prefill in `app.js` with a sample mix string per preset (editable before Generate) (FR-33)
+  - [x] 6.4 Tests: prompt includes mix when provided; omit when blank; existing no-profile / V1 path unchanged
 
 - [ ] 7.0 Simulated house-view card (FR-34–35)
   - [ ] 7.1 Render card titled e.g. **Simulated research view (demo) — not OCBC official research** when `ok` and house_view bullets exist

@@ -12,6 +12,7 @@
       goal: "Capital Preservation",
       geography: "Singapore-centric",
       assets: ["Fixed Income / Bonds", "Equities (Singapore / Asia)"],
+      portfolioMix: "20% equities / 60% bonds / 20% cash",
     },
     "income-affluent-asia": {
       tier: "Mass Affluent",
@@ -21,12 +22,14 @@
         "Fixed Income / Bonds",
         "Real Assets (Property, REITs, Infrastructure)",
       ],
+      portfolioMix: "30% equities / 50% bonds / 20% REITs",
     },
     "growth-hnw-global": {
       tier: "High Net Worth",
       goal: "Aggressive Growth",
       geography: "Global",
       assets: ["Global Equities", "Commodities"],
+      portfolioMix: "75% global equities / 15% commodities / 10% cash",
     },
     "legacy-uhnw-sg": {
       tier: "Ultra High Net Worth",
@@ -36,6 +39,7 @@
         "Equities (Singapore / Asia)",
         "Real Assets (Property, REITs, Infrastructure)",
       ],
+      portfolioMix: "40% Asia equities / 40% real assets / 20% bonds",
     },
   };
 
@@ -79,6 +83,8 @@
       box.disabled = false;
       box.checked = preset.assets.includes(box.value);
     });
+    const portfolioMix = profileForm.querySelector('input[name="portfolio_mix"]');
+    if (portfolioMix) portfolioMix.value = preset.portfolioMix;
     syncAssetLimit();
 
     personaChips.forEach(function (chip) {

@@ -413,6 +413,39 @@ body {
   margin-top: 0.2rem;
 }
 
+.profile-text-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--white);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.profile-text-field input {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 0.55rem 0.65rem;
+  color: var(--text);
+  background: var(--white);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.profile-text-field input:focus {
+  border-color: var(--brand-red);
+  outline: 2px solid var(--badge-bg);
+}
+
 .hint {
   font-weight: 400;
   text-transform: none;

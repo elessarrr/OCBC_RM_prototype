@@ -92,6 +92,12 @@ def build_system_prompt(profile: dict[str, Any] | None = None) -> str:
         asset_classes=assets_text,
         geography=profile.get("geography", ""),
     )
+    portfolio_mix = str(profile.get("portfolio_mix") or "").strip()
+    if portfolio_mix:
+        addition += (
+            "\nCurrent portfolio mix (client-provided): "
+            f"{portfolio_mix}\nRelate observations to this mix without treating it as verified data.\n"
+        )
     return f"{V1_SYSTEM_PROMPT}\n{addition}"
 
 

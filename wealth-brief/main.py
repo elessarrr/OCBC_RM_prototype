@@ -72,6 +72,7 @@ async def generate(
     goal: str | None = Form(None),
     geography: str | None = Form(None),
     asset_classes: list[str] | None = Form(None),
+    portfolio_mix: str | None = Form(None),
 ) -> HTMLResponse:
     """Generate brief from the in-page snapshot — does not re-fetch yfinance."""
     try:
@@ -93,6 +94,9 @@ async def generate(
             "geography": geography,
             "asset_classes": assets,
         }
+        mix = (portfolio_mix or "").strip()
+        if mix:
+            profile["portfolio_mix"] = mix
 
     result = generate_brief(snapshot, headlines, profile=profile)
     return templates.TemplateResponse(

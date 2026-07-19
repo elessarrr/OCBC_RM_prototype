@@ -161,6 +161,35 @@ def test_build_system_prompt_v2_appends_persona() -> None:
     assert "Never fabricate" in prompt or "never fabricate" in prompt.lower()
 
 
+def test_build_system_prompt_includes_portfolio_mix_when_provided() -> None:
+    prompt = build_system_prompt(
+        profile={
+            "tier": "High Net Worth",
+            "goal": "Income Generation",
+            "asset_classes": ["Fixed Income / Bonds"],
+            "geography": "Regional Asia",
+            "portfolio_mix": "60% equities / 30% bonds / 10% gold",
+        }
+    )
+
+    assert "Current portfolio mix" in prompt
+    assert "60% equities / 30% bonds / 10% gold" in prompt
+
+
+def test_build_system_prompt_omits_blank_portfolio_mix() -> None:
+    prompt = build_system_prompt(
+        profile={
+            "tier": "High Net Worth",
+            "goal": "Income Generation",
+            "asset_classes": ["Fixed Income / Bonds"],
+            "geography": "Regional Asia",
+            "portfolio_mix": "   ",
+        }
+    )
+
+    assert "Current portfolio mix" not in prompt
+
+
 def test_build_persona_badge() -> None:
     badge = build_persona_badge(
         {

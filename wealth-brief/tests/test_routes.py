@@ -264,6 +264,7 @@ def test_generate_with_profile_reuses_snapshot_not_yfinance(
             "goal": "Capital Preservation",
             "geography": "Singapore-centric",
             "asset_classes": ["Fixed Income / Bonds", "Cash / FX"],
+            "portfolio_mix": "40% equities / 50% bonds / 10% cash",
         },
     )
     assert response.status_code == 200
@@ -277,7 +278,33 @@ def test_generate_with_profile_reuses_snapshot_not_yfinance(
         "goal": "Capital Preservation",
         "geography": "Singapore-centric",
         "asset_classes": ["Fixed Income / Bonds", "Cash / FX"],
+        "portfolio_mix": "40% equities / 50% bonds / 10% cash",
     }
+
+
+@patch("main.generate_brief")
+def test_generate_omits_blank_portfolio_mix_from_profile(mock_gen) -> None:
+    mock_gen.return_value = {
+        "ok": True,
+        "text": "Income assets remained in focus.",
+        "badge": "Income Generation | HNW | Regional Asia",
+    }
+
+    response = client.post(
+        "/generate",
+        data={
+            "snapshot_json": json.dumps(FAKE_SNAPSHOT),
+            "headlines_json": json.dumps(FAKE_NEWS["headlines"]),
+            "tier": "High Net Worth",
+            "goal": "Income Generation",
+            "geography": "Regional Asia",
+            "portfolio_mix": "   ",
+        },
+    )
+
+    assert response.status_code == 200
+    profile = mock_gen.call_args.kwargs["profile"]
+    assert "portfolio_mix" not in profile
 
 
 @patch("main.generate_brief")
