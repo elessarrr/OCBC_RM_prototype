@@ -102,6 +102,9 @@ async def generate(
             "ok": result["ok"],
             "paragraphs": _paragraphs(result["text"]),
             "badge": result.get("badge"),
+            "ideas": result.get("ideas") or [],
+            "watch": result.get("watch") or [],
+            "house_view": result.get("house_view") or [],
         },
     )
 

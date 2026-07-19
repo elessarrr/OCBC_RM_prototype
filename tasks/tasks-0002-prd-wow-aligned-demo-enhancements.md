@@ -29,7 +29,7 @@
 
 ## Tasks
 
-- [ ] 1.0 Persona quick-select chips (FR-20–22)
+- [x] 1.0 Persona quick-select chips (FR-20–22)
   - [x] 1.1 Add a chip row above `#client-profile` in `index.html` with 4 buttons (type=`button`, not submit): Conservative HNW · Singapore; Income · Affluent · Asia; Growth · HNW · Global; Legacy · UHNW · Singapore
   - [x] 1.2 In `app.js`, on chip click: select matching `tier` / `goal` / `geography` radios; clear then check ≤2 `asset_classes` using existing checkbox values; call existing `syncAssetLimit()`; highlight active chip; **do not** call `/generate`
   - [x] 1.3 Confirm user can edit any field after a chip click and must press **Generate My Brief** to submit (FR-21–22)
@@ -37,12 +37,12 @@
   - [x] 1.5 Manual check: each chip fills a valid, submittable form without validation errors
 
 - [ ] 2.0 Structured one-call LLM output + Investment ideas panel (FR-23–25, FR-37)
-  - [ ] 2.1 RED: add `tests/test_brief.py` cases for parsing a labelled multi-block response (`BRIEF`, `INVESTMENT_IDEAS`, `WATCH`, `HOUSE_VIEW`) and for missing blocks soft-fail
-  - [ ] 2.2 Implement `parse_structured_brief_response()` (or equivalent) in `llm/brief.py` returning `{ paragraphs, ideas, watch, house_view }` with empty lists when markers absent
-  - [ ] 2.3 Update system/user prompts so DeepSeek returns the labelled plain-text contract (no markdown); keep V1/V2 persona guidance; never invent prices/news not in the payload
-  - [ ] 2.4 Update `generate_brief()` to return structured fields + existing `{ ok, text, badge }`; on LLM failure keep safe user message and empty panels (FR-39)
-  - [ ] 2.5 Wire `main.py` `/generate` to pass `ideas` into the brief partial; render **Investment ideas (demo)** with 2–3 bullets when `ok` and ideas present; hide when empty/failed (FR-23–25)
-  - [ ] 2.6 GREEN: run `pytest tests/test_brief.py` then extend `test_routes.py` mock so `/generate` HTML includes the demo ideas heading when mocked structured content is returned
+  - [x] 2.1 RED: add `tests/test_brief.py` cases for parsing a labelled multi-block response (`BRIEF`, `INVESTMENT_IDEAS`, `WATCH`, `HOUSE_VIEW`) and for missing blocks soft-fail
+  - [x] 2.2 Implement `parse_structured_brief_response()` (or equivalent) in `llm/brief.py` returning `{ paragraphs, ideas, watch, house_view }` with empty lists when markers absent
+  - [x] 2.3 Update system/user prompts so DeepSeek returns the labelled plain-text contract (no markdown); keep V1/V2 persona guidance; never invent prices/news not in the payload
+  - [x] 2.4 Update `generate_brief()` to return structured fields + existing `{ ok, text, badge }`; on LLM failure keep safe user message and empty panels (FR-39)
+  - [x] 2.5 Wire `main.py` `/generate` to pass `ideas` into the brief partial; render **Investment ideas (demo)** with 2–3 bullets when `ok` and ideas present; hide when empty/failed (FR-23–25)
+  - [x] 2.6 GREEN: run `pytest tests/test_brief.py` then extend `test_routes.py` mock so `/generate` HTML includes the demo ideas heading when mocked structured content is returned
 
 - [ ] 3.0 Draft client email from fixed boilerplate + brief (FR-26–28)
   - [ ] 3.1 RED: unit test that `build_client_email(brief_text)` wraps paragraphs in the PRD canonical template with `[CLIENT_NAME]` and `[RM_NAME]` placeholders (exact boilerplate)

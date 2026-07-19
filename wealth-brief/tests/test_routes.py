@@ -115,6 +115,37 @@ def test_generate_uses_posted_snapshot_not_live_fetch(mock_gen) -> None:
     assert kwargs.get("profile") is None
 
 
+@patch("main.generate_brief")
+def test_generate_renders_demo_investment_ideas(mock_gen) -> None:
+    mock_gen.return_value = {
+        "ok": True,
+        "text": "Markets were mixed. Maintain selective exposure.",
+        "badge": "Capital Preservation | HNW | Singapore Focus",
+        "ideas": [
+            "Review high-quality short-duration bonds.",
+            "Keep selective exposure to dividend equities.",
+        ],
+        "watch": [],
+        "house_view": [],
+    }
+
+    response = client.post(
+        "/generate",
+        data={
+            "snapshot_json": json.dumps(FAKE_SNAPSHOT),
+            "headlines_json": json.dumps(FAKE_NEWS["headlines"]),
+            "tier": "High Net Worth",
+            "goal": "Capital Preservation",
+            "geography": "Singapore-centric",
+        },
+    )
+
+    assert response.status_code == 200
+    assert "Investment ideas (demo)" in response.text
+    assert "Review high-quality short-duration bonds." in response.text
+    assert "Keep selective exposure to dividend equities." in response.text
+
+
 @patch("main.fetch_market_snapshot")
 @patch("main.generate_brief")
 def test_generate_with_profile_reuses_snapshot_not_yfinance(

@@ -11,6 +11,7 @@ from llm.brief import (
     build_system_prompt,
     build_user_prompt,
     generate_brief,
+    parse_structured_brief_response,
 )
 
 
@@ -37,6 +38,59 @@ SAMPLE_HEADLINES = [
     "Fed holds rates steady",
     "USD softens versus Asian FX",
 ]
+
+
+def test_parse_structured_brief_response_extracts_all_blocks() -> None:
+    parsed = parse_structured_brief_response(
+        """BRIEF:
+Markets were mixed overnight.
+
+Singapore assets stayed resilient.
+
+INVESTMENT_IDEAS:
+1. Review high-quality short-duration bonds.
+2. Keep selective exposure to dividend equities.
+
+WATCH:
+1. USD/SGD reaction to regional data
+2. US 10-year yield direction
+3. Equity volatility into the close
+
+HOUSE_VIEW:
+1. Stay balanced across risk assets.
+2. Prefer quality income over chasing momentum."""
+    )
+
+    assert parsed["paragraphs"] == [
+        "Markets were mixed overnight.",
+        "Singapore assets stayed resilient.",
+    ]
+    assert parsed["ideas"] == [
+        "Review high-quality short-duration bonds.",
+        "Keep selective exposure to dividend equities.",
+    ]
+    assert parsed["watch"] == [
+        "USD/SGD reaction to regional data",
+        "US 10-year yield direction",
+        "Equity volatility into the close",
+    ]
+    assert parsed["house_view"] == [
+        "Stay balanced across risk assets.",
+        "Prefer quality income over chasing momentum.",
+    ]
+
+
+def test_parse_structured_brief_response_soft_fails_missing_blocks() -> None:
+    parsed = parse_structured_brief_response(
+        "BRIEF:\nMarkets were mixed. Focus on portfolio resilience."
+    )
+
+    assert parsed["paragraphs"] == [
+        "Markets were mixed. Focus on portfolio resilience."
+    ]
+    assert parsed["ideas"] == []
+    assert parsed["watch"] == []
+    assert parsed["house_view"] == []
 
 
 def test_build_user_prompt_includes_figures_and_headlines() -> None:
@@ -91,7 +145,21 @@ def test_generate_brief_returns_plain_text(mock_openai_cls: MagicMock) -> None:
         choices=[
             MagicMock(
                 message=MagicMock(
-                    content="Markets were mixed today. Risk sits with USD/SGD."
+                    content="""BRIEF:
+Markets were mixed today. Risk sits with USD/SGD.
+
+INVESTMENT_IDEAS:
+1. Review short-duration bonds.
+2. Keep selective equity exposure.
+
+WATCH:
+1. USD/SGD direction
+2. US Treasury yields
+3. Regional equity volatility
+
+HOUSE_VIEW:
+1. Maintain balanced positioning.
+2. Prefer quality income."""
                 )
             )
         ]
@@ -106,6 +174,19 @@ def test_generate_brief_returns_plain_text(mock_openai_cls: MagicMock) -> None:
     assert result["ok"] is True
     assert "Markets were mixed" in result["text"]
     assert "**" not in result["text"]
+    assert result["ideas"] == [
+        "Review short-duration bonds.",
+        "Keep selective equity exposure.",
+    ]
+    assert result["watch"] == [
+        "USD/SGD direction",
+        "US Treasury yields",
+        "Regional equity volatility",
+    ]
+    assert result["house_view"] == [
+        "Maintain balanced positioning.",
+        "Prefer quality income.",
+    ]
     mock_openai_cls.assert_called_once()
     assert mock_openai_cls.call_args.kwargs["base_url"] == "https://api.deepseek.com"
     client.chat.completions.create.assert_called_once()
@@ -133,6 +214,9 @@ def test_generate_brief_graceful_on_api_error(mock_openai_cls: MagicMock) -> Non
     )
     assert result["ok"] is False
     assert result["text"] == BRIEF_UNAVAILABLE_USER_MESSAGE
+    assert result["ideas"] == []
+    assert result["watch"] == []
+    assert result["house_view"] == []
     assert "401" not in result["text"]
     assert "secret-key" not in result["text"]
 
@@ -147,3 +231,6 @@ def test_generate_brief_without_api_key(monkeypatch) -> None:
     )
     assert result["ok"] is False
     assert result["text"] == BRIEF_UNAVAILABLE_USER_MESSAGE
+    assert result["ideas"] == []
+    assert result["watch"] == []
+    assert result["house_view"] == []

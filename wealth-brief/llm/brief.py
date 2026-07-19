@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 from typing import Any
 
 import httpx
@@ -20,11 +21,26 @@ MODEL = "deepseek-chat"
 TEMPERATURE = 0.4
 
 V1_SYSTEM_PROMPT = """You are a senior wealth analyst writing a morning market brief for a private banking client.
-Write in clear, professional English. Be concise — 2 paragraphs, no bullet points.
+Write in clear, professional English. Be concise — 2 paragraphs in the BRIEF section.
 Do not use filler phrases. Lead with what moved and why it matters.
 Never fabricate data — only reference the figures provided.
 End with one sentence framing the key risk or opportunity for the day.
-Do not use markdown formatting — plain paragraphs only."""
+Do not use markdown formatting.
+
+Return plain text in exactly this labelled structure:
+BRIEF:
+Two short paragraphs grounded only in the supplied data and headlines.
+
+INVESTMENT_IDEAS:
+2 or 3 numbered, concise demo ideas suited to the client profile.
+
+WATCH:
+Exactly 3 numbered catalysts or market levels to monitor today.
+
+HOUSE_VIEW:
+2 or 3 numbered, simulated research-view observations.
+
+Never describe any generated idea or house view as official OCBC research, advice, or a bank recommendation."""
 
 V2_SYSTEM_PROMPT_ADDITION = """
 You are writing for a specific client profile. Adapt your brief accordingly:
@@ -121,6 +137,58 @@ def _strip_markdownish(text: str) -> str:
     return text.replace("**", "").replace("__", "").strip()
 
 
+def parse_structured_brief_response(raw: str) -> dict[str, list[str]]:
+    """Parse the labelled one-call response into renderable sections."""
+    marker_to_key = {
+        "BRIEF:": "paragraphs",
+        "INVESTMENT_IDEAS:": "ideas",
+        "WATCH:": "watch",
+        "HOUSE_VIEW:": "house_view",
+    }
+    sections: dict[str, list[str]] = {
+        "paragraphs": [],
+        "ideas": [],
+        "watch": [],
+        "house_view": [],
+    }
+    collected: dict[str, list[str]] = {key: [] for key in sections}
+    current = "paragraphs"
+
+    for line in _strip_markdownish(raw).splitlines():
+        marker = line.strip().upper()
+        if marker in marker_to_key:
+            current = marker_to_key[marker]
+            continue
+        collected[current].append(line.rstrip())
+
+    brief_text = "\n".join(collected["paragraphs"]).strip()
+    sections["paragraphs"] = [
+        paragraph.strip()
+        for paragraph in re.split(r"\n\s*\n", brief_text)
+        if paragraph.strip()
+    ]
+
+    for key in ("ideas", "watch", "house_view"):
+        sections[key] = [
+            re.sub(r"^\s*(?:[-*•]|\d+[.)])\s*", "", line).strip()
+            for line in collected[key]
+            if line.strip()
+        ]
+
+    return sections
+
+
+def _failure_result(badge: str | None) -> dict[str, Any]:
+    return {
+        "ok": False,
+        "text": BRIEF_UNAVAILABLE_USER_MESSAGE,
+        "badge": badge,
+        "ideas": [],
+        "watch": [],
+        "house_view": [],
+    }
+
+
 def generate_brief(
     snapshot: dict[str, Any],
     headlines: list[Any],
@@ -133,11 +201,7 @@ def generate_brief(
 
     if not key:
         logger.warning("DEEPSEEK_API_KEY missing; returning safe brief message")
-        return {
-            "ok": False,
-            "text": BRIEF_UNAVAILABLE_USER_MESSAGE,
-            "badge": badge,
-        }
+        return _failure_result(badge)
 
     try:
         # trust_env=False: avoid local HTTP(S)_PROXY 403s to api.deepseek.com
@@ -161,18 +225,18 @@ def generate_brief(
             ],
         )
         raw = (response.choices[0].message.content or "").strip()
-        narrative = _strip_markdownish(raw)
-        if not narrative:
-            return {
-                "ok": False,
-                "text": BRIEF_UNAVAILABLE_USER_MESSAGE,
-                "badge": badge,
-            }
-        return {"ok": True, "text": narrative, "badge": badge}
+        parsed = parse_structured_brief_response(raw)
+        if not parsed["paragraphs"]:
+            return _failure_result(badge)
+        narrative = "\n\n".join(parsed["paragraphs"])
+        return {
+            "ok": True,
+            "text": narrative,
+            "badge": badge,
+            "ideas": parsed["ideas"],
+            "watch": parsed["watch"],
+            "house_view": parsed["house_view"],
+        }
     except Exception:
         logger.exception("DeepSeek brief generation failed")
-        return {
-            "ok": False,
-            "text": BRIEF_UNAVAILABLE_USER_MESSAGE,
-            "badge": badge,
-        }
+        return _failure_result(badge)

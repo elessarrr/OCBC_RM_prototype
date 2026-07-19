@@ -6,6 +6,16 @@
   <p>{{ para }}</p>
   {% endfor %}
 </div>
+{% if ok and ideas %}
+<section class="brief-section" aria-labelledby="investment-ideas-heading">
+  <h3 id="investment-ideas-heading">Investment ideas (demo)</h3>
+  <ul>
+    {% for idea in ideas %}
+    <li>{{ idea }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
 <div class="rm-cta-section">
   <p class="rm-cta-label">Ready to act on this? Talk to your Relationship Manager.</p>
   <div class="rm-actions">
