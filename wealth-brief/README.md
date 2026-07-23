@@ -13,7 +13,7 @@ AI Lab interview prototype: a single-page FastAPI app that pulls live (or last-c
 | Layer | Choice |
 |---|---|
 | Backend | FastAPI + Jinja2 + HTMX |
-| Markets | yfinance (7 series) |
+| Markets | yfinance (8 series) |
 | News | Finnhub REST + static headline fallback |
 | LLM | DeepSeek `deepseek-chat` (OpenAI-compatible API) |
 | Deploy | Railway (paid), root directory `wealth-brief` |

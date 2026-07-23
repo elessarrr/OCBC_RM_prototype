@@ -19,7 +19,7 @@
 **We use:**
 
 - Backend: FastAPI (Python), Jinja2 templates, HTMX
-- Market data: yfinance (7 series)
+- Market data: yfinance (8 series: STI, S&P 500, Hang Seng, Nikkei, USD/SGD, Gold, Brent, US 10Y Yield)
 - News: Finnhub REST (+ static headline fallback)
 - LLM: DeepSeek (`deepseek-chat` via OpenAI-compatible API)
 - Deploy: Railway (paid)

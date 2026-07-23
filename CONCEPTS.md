@@ -6,7 +6,7 @@
 
 ### Market snapshot
 
-The set of seven series shown on page load: STI, S&P 500, Hang Seng, Nikkei, USD/SGD, Gold, Brent. Each cell has price, day change (points + %), and directional arrow. Includes an `"as of"` timestamp (SGT).
+The set of eight series shown on page load: STI, S&P 500, Hang Seng, Nikkei, USD/SGD, Gold, Brent, US 10Y Yield. Each cell has price, day change (points + %), and directional arrow. Includes an `"as of"` timestamp (SGT).
 
 ### Headline set
 

@@ -2,7 +2,7 @@
 
 Riffing doc. Mark ideas `[SHIP]`, `[MAYBE]`, `[HOLD]`, or `[SKIP]`.
 
-**Rule:** interview is probably Monday/Tuesday. Two filters before anything ships:
+Two filters before anything ships:
 1. Does it make the *demo story* stronger — or just make the app busier?
 2. Can it be built + tested + deployed in < 2h without risking what already works?
 
