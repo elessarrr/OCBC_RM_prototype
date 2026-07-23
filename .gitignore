@@ -26,3 +26,4 @@ wealth-brief/.env
 
 # Private interview prep (not part of the shared demo repo)
 OCBC_AI_Lab_Interview_Prep.md
+.gstack/
